@@ -13,3 +13,10 @@ class RegisterForm(forms.Form):
 class LoginForm(forms.Form):
     username = forms.CharField(required=True)
     password = forms.CharField(required=True)
+
+
+class ForgetPwdForm(forms.Form):
+    email = forms.EmailField(required=True)
+    code = forms.CharField(required=True,max_length=5)
+    password1 = forms.CharField(required=True,min_length=6)
+    password2 = forms.CharField(required=True,min_length=6)

@@ -16,9 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.generic import TemplateView
+from django.views.static import serve
+
+from .settings import MEDIA_ROOT
+import xadmin
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('xadmin/', xadmin.site.urls),
     path('index/', TemplateView.as_view(template_name="index.html"), name='index'),
     path('users/', include('users.urls', namespace='users')),
+    path('commoditys/', include('commoditys.urls', namespace='commoditys')),
+    re_path('media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT})
 ]

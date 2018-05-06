@@ -23,5 +23,4 @@ def send_email(email,type):
 
     email_title = "您的验证码是"
     email_body = emailcode.code
-    if type =="register":
-        send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])
+    send_status = send_mail(email_title, email_body, EMAIL_FROM, [email])

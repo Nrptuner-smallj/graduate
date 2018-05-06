@@ -2,13 +2,13 @@ import json
 
 from django.shortcuts import render
 from django.views.generic.base import View
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
-from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import authenticate, login, logout
 
-from .forms import RegisterForm,LoginForm
+from .forms import RegisterForm, LoginForm,ForgetPwdForm
 from .models import UserProfile, EmailCode
 from utils.emailsend import send_email
 
@@ -70,31 +70,62 @@ class LoginView(View):
     def get(self, request):
         return render(request, 'login.html')
 
-    def post(self,request):
+    def post(self, request):
         login_form = LoginForm(request.POST)
         if login_form.is_valid():
             username = request.POST.get("username")
             password = request.POST.get("password")
-            user = authenticate(username=username,password=password)
+            user = authenticate(username=username, password=password)
 
             if user is not None:
-                login(request,user)
-                return render(request,'index.html')
+                login(request, user)
+                return render(request, 'index.html')
             else:
-                return render(request,'login.html',dict(msg="用户或密码错误"))
+                return render(request, 'login.html', dict(msg="用户或密码错误"))
 
         else:
-            return render(request,'login.html',dict(login_form=login_form))
+            return render(request, 'login.html', dict(login_form=login_form))
 
 
 class LogoutView(View):
     """登出逻辑"""
-    def get(self,request):
+
+    def get(self, request):
         logout(request)
         from django.urls import reverse
-        return HttpResponseRedirect(reverse("index"))
+        return HttpResponseRedirect(reverse("index"),{})
 
 
+class ForgetPwdView(View):
+    """忘记密码"""
+
+    def get(self, request):
+        return render(request, 'forgetpwd.html')
+
+
+    def post(self,request):
+        forgetpwd_form = ForgetPwdForm(request.POST)
+        if forgetpwd_form.is_valid():
+
+            email = request.POST.get("email")
+            if not UserProfile.objects.filter(email=email):
+                return render(request,"forgetpwd.html",dict(msg="没有查找到用户"))
+
+            code = request.POST.get("code")
+            if not EmailCode.objects.filter(send_type="forgetpwd",email=email,code=code):
+                return render(request,"forgetpwd.html",dict(msg="验证码输入错误"))
+
+            password1 = request.POST.get("password1")
+            password2 = request.POST.get("password2")
+            if password1 != password2:
+                return render(request,"forgetpwd.html",dict(msg = "密码不一致"))
+
+            user = UserProfile.objects.get(email=email)
+            user.password=make_password(password1)
+            user.save()
+            return render(request,"login.html")
+        else:
+            return render(request,"forgetpwd.html",dict(forgetpwd_form=forgetpwd_form))
 
 
 class GetEmailCodeView(View):

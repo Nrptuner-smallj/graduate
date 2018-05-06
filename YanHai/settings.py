@@ -38,6 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
+    'commoditys',
+    'xadmin',
+    'crispy_forms',
+    'pure_pagination'
+
 ]
 
 AUTH_USER_MODEL = "users.UserProfile"
@@ -67,6 +72,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media'
             ],
         },
     },
@@ -106,6 +112,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = (
+    'users.views.CustomBackend',
+)
+
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
@@ -131,3 +141,6 @@ EMAIL_HOST_USER = "neptunersmallj@sina.com"
 EMAIL_HOST_PASSWORD = "1141764044zj"
 EMAIL_USE_TLS = False
 EMAIL_FROM = "neptunersmallj@sina.com"
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
