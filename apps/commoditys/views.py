@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 
 from .models import Commodity
+from opreation.models import LackCommodity
 
 
 # Create your views here.
@@ -59,3 +60,21 @@ class DetailView(View):
         catalog = commodity.catalog.replace('<br/>', '').replace('<div id="ml_txt" style="display:none;">', '')
         return render(request, "commditydetail.html",
                       dict(commodity=commodity, could_buy=could_buy, desc=desc, catalog=catalog, recommend=recommend))
+
+
+class LackView(View):
+    """缺货登记"""
+
+    def get(self,request):
+        name = request.GET.get("name")
+        bookurl = request.GET.get("bookurl")
+        if not request.user.is_authenticated:
+            return HttpResponse('{"status":"fail"}', content_type='application/json')
+        lack_record = LackCommodity()
+        lack_record.name = name
+        lack_record.url = bookurl
+        lack_record.user = request.user
+        lack_record.save()
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+
+

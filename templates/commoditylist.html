@@ -72,7 +72,8 @@
                         </li>
                     </ul>
                     <form class="form-inline" method="get" action="{% url 'commoditys:list' %}">
-                        <input class="form-control mr-sm-2" type="text" id="keywords" name="keywords" value="{{ key_word }}">
+                        <input class="form-control mr-sm-2" type="text" id="keywords" name="keywords"
+                               value="{{ key_word }}">
                         <button class="btn btn-primary my-2 my-sm-0" type="submit">
                             搜索
                         </button>
@@ -112,43 +113,52 @@
             <br>
             <div class="row">
                 <div class="col-md-9">
-                    <div class="row" id = ''>
+                    <div class="row" id=''>
                         <div class="col-md-12">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
-                                    <a class="nav-link {% ifequal sort '' %}active{% endifequal %}" href="?sort=&keywords={{ key_word }}">默认</a>
+                                    <a class="nav-link {% ifequal sort '' %}active{% endifequal %}"
+                                       href="?sort=&keywords={{ key_word }}">默认</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {% ifequal sort 'price' %}active{% endifequal %}" href="?sort=price&keywords={{ key_word }}">价格</a>
+                                    <a class="nav-link {% ifequal sort 'price' %}active{% endifequal %}"
+                                       href="?sort=price&keywords={{ key_word }}">价格</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {% ifequal sort 'sell_nums' %}active{% endifequal %}" href="?sort=sell_nums&keywords={{ key_word }}">销量</a>
+                                    <a class="nav-link {% ifequal sort 'sell_nums' %}active{% endifequal %}"
+                                       href="?sort=sell_nums&keywords={{ key_word }}">销量</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {% ifequal sort 'click_nums' %}active{% endifequal %}" href="?sort=click_nums&keywords={{ key_word }}">热度</a>
+                                    <a class="nav-link {% ifequal sort 'click_nums' %}active{% endifequal %}"
+                                       href="?sort=click_nums&keywords={{ key_word }}">热度</a>
                                 </li>
                                 <li class="nav-item ml-md-auto ">
-                                    <a class="nav-link" href="#" id="change"><span id="showgrid_2">横排</span>/<span id="showgrid_1">方框</span></a>
+                                    <a class="nav-link" href="#" id="change"><span id="showgrid_2">横排</span>/<span
+                                            id="showgrid_1">方框</span></a>
                                 </li>
                             </ul>
 
                         </div>
                     </div>
                     <br>
-                    <div class="row" id="grid_1" >
+                    <div class="row" id="grid_1">
                         {% for commodity in commoditys.object_list %}
                             <div class="col-md-3" style="margin-bottom: 5px">
                                 <div class="card">
                                     <div style="text-align: center">
                                         <a href="{% url 'commoditys:detail' commodity.id %}"><img class="card-img-top"
-                                             style="margin-top:3px "
-                                             alt="Bootstrap Thumbnail First" src="{{ MEDIA_URL }}{{ commodity.image }}"></a>
+                                                                                                  style="margin-top:3px "
+                                                                                                  alt="Bootstrap Thumbnail First"
+                                                                                                  src="
+                                                                                                          {{ MEDIA_URL }}{{ commodity.image }}"></a>
                                     </div>
                                     <div class="card-block"
                                          style="overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap">
-                                        <a href="{% url 'commoditys:detail' commodity.id %}"><h7 class="card-title" title="{{ commodity.name }}">
-                                            {{ commodity.name }}
-                                        </h7></a>
+                                        <a href="{% url 'commoditys:detail' commodity.id %}">
+                                            <h7 class="card-title" title="{{ commodity.name }}">
+                                                {{ commodity.name }}
+                                            </h7>
+                                        </a>
                                         <br>
                                         <span class="card-text">
                                 定价：<span style="color: #cc3300;text-decoration: line-through"><strong>{{ commodity.price }}</strong></span>&nbsp;&nbsp;
@@ -159,12 +169,11 @@
                                 <sqan style="color: #6b7879;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap">{{ commodity.author }}</sqan><br>
 
                             </span>
-                                        <span class="card-text" style="font-size: small; margin-bottom: 20px;margin-top: 6px">
+                                        <span class="card-text"
+                                              style="font-size: small; margin-bottom: 20px;margin-top: 6px">
 
                                 <span style="color: #6b7879;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap">{{ commodity.publisher }}</span>
                             </span>
-
-
 
 
                                     </div>
@@ -175,16 +184,16 @@
 
                     </div>
                     <br>
-                    <div class="row" id="grid_2" >
+                    <div class="row" id="grid_2">
                         {% for commodity in commoditys.object_list %}
-                        <div class="col-md-12  card" style="margin-left: 10px;margin-bottom: 15px">
-                            <div class="media ">
-                                <img class="mr-3"
-                                     style="margin-top:5px;margin-bottom:5px;width:auto;height: 150px;float: left"
-                                     alt="Bootstrap Media Preview" src="{{ MEDIA_URL }}{{ commodity.image }}"/>
-                                <div class="media-body" style="float: right">
-                                    <br>
-                                    <span class="card-text">
+                            <div class="col-md-12  card" style="margin-left: 10px;margin-bottom: 15px">
+                                <div class="media ">
+                                    <img class="mr-3"
+                                         style="margin-top:5px;margin-bottom:5px;width:auto;height: 150px;float: left"
+                                         alt="Bootstrap Media Preview" src="{{ MEDIA_URL }}{{ commodity.image }}"/>
+                                    <div class="media-body" style="float: right">
+                                        <br>
+                                        <span class="card-text">
                                         <h5 class="mt-0">
 
 
@@ -192,23 +201,24 @@
                                     </span>
 
 
-                                    <span class="card-text" style="font-size: small">
+                                        <span class="card-text" style="font-size: small">
                                                 <span style="color: #6b7879;float: left">{{ commodity.author }}</span>
                                                 <span style="color: #6b7879;float: right">{{ commodity.publisher }}</span>
                                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                                定价：<span style="color: #cc3300;text-decoration: line-through"><strong>{{ commodity.price }}</strong></span>&nbsp;&nbsp;
-                                                现价：<span style="color: #cc3300"><strong>{{ commodity.price }}</strong></span>
+                                        <br>
+                                        <span class="card-text">
+                                                定价：<span
+                                                style="color: #cc3300;text-decoration: line-through"><strong>{{ commodity.price }}</strong></span>&nbsp;&nbsp;
+                                                现价：<span
+                                                style="color: #cc3300"><strong>{{ commodity.price }}</strong></span>
                                                <br>
 
                                            </span>
 
 
-
+                                    </div>
                                 </div>
                             </div>
-                        </div>
                         {% endfor %}
                     </div>
                     <div class="text-center" style="text-align: center;vertical-align: center;display: table;height: 30px;
@@ -225,8 +235,9 @@
 
                                     {% if page %}
                                         {% ifequal page commoditys.number %}
-                                            <li class="page-item" >
-                                                <a class="page-link" href="?{{ page.querystring }}" style="color: #c12e2a">{{ page }}</a>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{{ page.querystring }}"
+                                                   style="color: #c12e2a">{{ page }}</a>
                                             </li>
                                         {% else %}
                                             <li class="page-item">
@@ -274,19 +285,19 @@
                             <tbody style="font-size: x-small;">
                             {% for commodity in rank_commoditys %}
                                 <tr>
-                                <td style="width: 10%">
-                                    {{ forloop.counter }}
-                                </td>
-                                <td style="width: 70%">
-                                    <a title="{{ commodity.name }}" href="{% url 'commoditys:detail' commodity.id %}">{{ commodity.name }}</a>
-                                </td>
-                                <td style="width: 20%;">
-                                    <a title="{{ commodity.author }}">{{ commodity.author }}</a>
-                                </td>
+                                    <td style="width: 10%">
+                                        {{ forloop.counter }}
+                                    </td>
+                                    <td style="width: 70%">
+                                        <a title="{{ commodity.name }}"
+                                           href="{% url 'commoditys:detail' commodity.id %}">{{ commodity.name }}</a>
+                                    </td>
+                                    <td style="width: 20%;">
+                                        <a title="{{ commodity.author }}">{{ commodity.author }}</a>
+                                    </td>
 
-                            </tr>
+                                </tr>
                             {% endfor %}
-
 
 
                             </tbody>
@@ -299,26 +310,26 @@
                     </h6>
                     <hr style="height:1px;border:none;border-top:1px dotted #808080;"/>
                     <div class="col-md-12 card">
-                        <form role="form" autocomplete="off">
-                            <div class="form-group">
 
-                                <label for="email">
-                                    书名
-                                </label>
-                                <input class="form-control" id="name" type="" placeholder="商品名称">
-                            </div>
-                            <div class="form-group">
+                        <div class="form-group">
 
-                                <label for="password">
-                                    其他网站连接
-                                </label>
-                                <input class="form-control" id="bookurl" type="url" placeholder="链接">
-                            </div>
-                            <button type="submit" class="btn btn-primary form-control">
-                                告诉我们
-                            </button>
-                            <br>
-                        </form>
+                            <label for="email">
+                                书名
+                            </label>
+                            <input class="form-control" id="bookname" name="name" type="" placeholder="商品名称">
+                        </div>
+                        <div class="form-group">
+
+                            <label for="password">
+                                其他网站连接
+                            </label>
+                            <input class="form-control" id="bookurl" name="bookurl" type="url" placeholder="链接">
+                        </div>
+                        <button id="tellus" class="btn btn-primary form-control">
+                            告诉我们
+                        </button>
+                        <br>
+
                         <br>
                     </div>
 
@@ -370,7 +381,7 @@
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/scripts.js' %}"></script>
 <script>
-     $('#grid_2').hide();
+    $('#grid_2').hide();
     $('#showgrid_1').click(function () {
         $('#grid_1').show();
         $('#grid_2').hide()
@@ -378,6 +389,38 @@
     $('#showgrid_2').click(function () {
         $('#grid_2').show();
         $('#grid_1').hide()
+    })
+</script>
+<script>
+    $(function () {
+        $('#tellus').click(function () {
+            var name = $('#bookname').val()
+            var bookurl = $('#bookurl').val()
+            if (name == '' || bookurl == '') {
+                alert("字段不可为空");
+                return 1;
+            }
+
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: "{% url 'commoditys:lack' %}",
+                data: {'name': name, 'bookurl': bookurl},
+                async: true,
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function (data) {
+                    if (data.status == 'fail') {
+                        alert("尚未登录，请先登录");
+                        window.location.href = "user/login/";
+
+                    } else if (data.status == 'success') {
+                        alert("登记成功");
+                    }
+                },
+            });
+        })
     })
 </script>
 </body>

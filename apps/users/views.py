@@ -3,13 +3,13 @@ import json
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.hashers import make_password
+from django.contrib.auth.hashers import make_password,check_password
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 
-from .forms import RegisterForm, LoginForm,ForgetPwdForm
-from .models import UserProfile, EmailCode
+from .forms import RegisterForm, LoginForm,ForgetPwdForm,ModifyForm,AddressForm
+from .models import UserProfile, EmailCode,Address
 from utils.emailsend import send_email
 
 
@@ -129,12 +129,165 @@ class ForgetPwdView(View):
 
 
 class GetEmailCodeView(View):
+    """发送验证码"""
 
     def post(self, request):
         email = request.POST.get("email")
         type = request.POST.get("type")
+        if type == "modifyemail":
+
+            if UserProfile.objects.filter(email=email):
+                return HttpResponse('{"status":"fail"}', content_type='application/json')
         try:
             send_email(email, type)
             return HttpResponse('{"status":"success"}', content_type='application/json')
         except:
             return HttpResponse('{"status":"fail"}', content_type='application/json')
+
+
+class UserCenterIndexView(View):
+
+
+    def get(self,request):
+        return render(request,"usercenter-index.html",dict(user = request.user))
+
+    def post(self,request):
+        modify_form = ModifyForm(request.POST)
+        if modify_form.is_valid():
+            user = request.user
+            birthday = request.POST.get("birthday")
+            gender = request.POST.get("gender")
+            tel = request.POST.get("tel")
+            user.birthday = birthday
+            user.tel =tel
+            user.gender = gender
+            user.save()
+            return render(request, "usercenter-index.html", dict(msg="保存成功"))
+        else:
+            return render(request,"usercenter-index.html",dict(modify_form=modify_form))
+
+
+class ModifyPwdView(View):
+    """个人中心修改密码"""
+
+    def post(self,request):
+        oldpwd = request.POST.get('oldpass')
+        newpwd = request.POST.get('newpass')
+        user = request.user
+        if not user.check_password(oldpwd):
+            return HttpResponse('{"status":"fail"}', content_type='application/json')
+        else:
+            user.password = make_password(newpwd)
+            user.save()
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+
+
+class ModifyEmailView(View):
+    """个人中心修改邮箱"""
+
+    def post(self,request):
+        email = request.POST.get("email")
+        code = request.POST.get("code")
+        if not EmailCode.objects.filter(send_type="modifyemail", email=email, code=code):
+            return HttpResponse('{"status":"fail"}', content_type='application/json')
+        user = request.user
+        user.email = email
+        user.save()
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+
+class AddressListView(View):
+    """个人地址展示"""
+
+    def get(self,request):
+        addresses = Address.objects.filter(user=request.user)
+        return render(request,"usercenter-address.html",dict(addresses=addresses))
+
+class AddAddressView(View):
+    """添加或修改个人地址"""
+
+    def get(self,request,address_id):
+        if address_id == 0:
+            return render(request,"usercenter-addaddress.html",dict(id=address_id))
+        else:
+            address = Address.objects.get(id=address_id)
+            return render(request,"usercenter-addaddress.html",dict(address=address,id=address_id))
+
+    def post(self,request,address_id):
+        # id为0的话是添加，不为0则是修改
+        if address_id == 0:
+            content = request.POST.get("address")
+            detail = request.POST.get("detail")
+            name = request.POST.get("name")
+            tel = request.POST.get("tel")
+            contents = str(content).split('/')
+            if len(contents)<3 or detail == '' or name=='' or tel == '' or len(tel)>11:
+                return render(request,'usercenter-addaddress.html',dict(id=address_id,msg="缺少必填字段或错误"))
+            else:
+                address = Address()
+                address.province = contents[0]
+                address.city = contents[1]
+                address.region = contents[2]
+                if len(contents)>3:
+                    address.town = contents[3]
+                address.tel = tel
+                address.name = name
+                address.detail = detail
+                address.user = request.user
+                address.save()
+                from django.urls import reverse
+                return HttpResponseRedirect(reverse('users:addresslist'))
+        else:
+            content = request.POST.get("address")
+            detail = request.POST.get("detail")
+            name = request.POST.get("name")
+            tel = request.POST.get("tel")
+            contents = str(content).split('/')
+            if len(contents) < 3 or detail == '' or name == '' or tel == '' or len(tel) > 11:
+                return render(request, 'usercenter-addaddress.html', dict(id=address_id, msg="缺少必填字段或错误"))
+            else:
+                address = Address.objects.get(id=address_id)
+                address.province = contents[0]
+                address.city = contents[1]
+                address.region = contents[2]
+                if len(contents) > 3:
+                    address.town = contents[3]
+                address.tel = tel
+                address.name = name
+                address.detail = detail
+                address.user = request.user
+                address.save()
+                from django.urls import reverse
+                return HttpResponseRedirect(reverse('users:addresslist'))
+
+
+class DeleteAddressView(View):
+
+    def get(self,request,address_id):
+        address = Address.objects.get(id = address_id)
+        address.delete()
+        from django.urls import reverse
+        return HttpResponseRedirect(reverse('users:addresslist'))
+
+
+class WalletView(View):
+    """我的钱包"""
+
+    def get(self,request):
+        user = request.user
+        return render(request,"usercenter-wallet.html",dict(user=user))
+
+    def post(self,request):
+        code = request.POST.get('code','')
+        paypass = request.POST.get('paypwd')
+        if not EmailCode.objects.filter(email=request.user.email,code=code,send_type='modifypaypwd'):
+            return HttpResponse('{"status":"fail"}', content_type='application/json')
+        else:
+            user = request.user
+            user.paypass = make_password(paypass)
+            user.save()
+            return HttpResponse('{"status":"success"}', content_type='application/json')
+
+
+
+
+

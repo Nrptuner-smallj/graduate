@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'commoditys',
+    'opreation',
     'xadmin',
     'crispy_forms',
     'pure_pagination'

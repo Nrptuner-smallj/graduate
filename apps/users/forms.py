@@ -20,3 +20,16 @@ class ForgetPwdForm(forms.Form):
     code = forms.CharField(required=True,max_length=5)
     password1 = forms.CharField(required=True,min_length=6)
     password2 = forms.CharField(required=True,min_length=6)
+
+
+class ModifyForm(forms.Form):
+    birthday = forms.DateField(required=True)
+    gender = forms.CharField(required=True)
+    tel = forms.CharField(required=True,max_length=11)
+
+
+class AddressForm(forms.Form):
+    address = forms.CharField(required=True,max_length=200)
+    name = forms.CharField(required=True)
+    tel = forms.CharField(required=True,max_length=11)
+    detail = forms.CharField(required=True,max_length=100)

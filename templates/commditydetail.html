@@ -90,13 +90,13 @@
             <nav>
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="#">{{ commodity.catagory.cata_up.cata_up.name }}</a>
+                        <a href="{% url 'commoditys:list'%}?keywords={{ commodity.catagory.cata_up.cata_up.name }}">{{ commodity.catagory.cata_up.cata_up.name }}</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="#">{{ commodity.catagory.cata_up.name }}</a>
+                        <a href="{% url 'commoditys:list'%}?keywords={{ commodity.catagory.cata_up.name }}">{{ commodity.catagory.cata_up.name }}</a>
                     </li>
                     <li class="breadcrumb-item active">
-                        {{ commodity.catagory.name }}
+                        <a href="{% url 'commoditys:list'%}?keywords={{ commodity.catagory.name }}">{{ commodity.catagory.name }}</a>
                     </li>
                 </ol>
             </nav>
@@ -173,7 +173,7 @@
                                     数量:
                                 </dt>
                                 <dd>
-                                    <input id="5" data_step="1" data_min="0" data_max="{{ commodity.stock }}" data_digit="0" value="1"
+                                    <input id="5" data_step="1" data_min="0" data_max="{{ commodity.stock }}" data_digit="0" value="0"
                                            style="width:100px;"/><br>
                                 </dd>
 
@@ -391,7 +391,16 @@
         if ('{{ could_buy }}'=='1')
         {
             alert("没有支付密码或者缺货");
-            return;
+            return 1;
+        }
+    })
+</script>
+<script>
+    $('#addcart').click(function () {
+        if ('{{ could_buy }}'=='1')
+        {
+            alert("没有支付密码或者缺货");
+            return 1;
         }
     })
 </script>
