@@ -150,6 +150,7 @@
                         </div>
                         <div class="col-md-7">
                             <input hidden="hidden" value="{{ could_buy }}" id="could_buy">
+                            <input hidden="hidden" value="{{ commodity.id }}" name="id" id="id">
                             <dl>
                                 <dt>
                                     商品：
@@ -173,14 +174,13 @@
                                     数量:
                                 </dt>
                                 <dd>
-                                    <input id="5" data_step="1" data_min="0" data_max="{{ commodity.stock }}" data_digit="0" value="0"
+                                    <input id="nums" data_step="1" data_min="0" data_max="{{ commodity.stock }}" data_digit="0" value="{% ifequal commodity.stock 0 %}0{% else %}1{% endifequal %}"
                                            style="width:100px;"/><br>
                                 </dd>
 
                             </dl>
                             <p>
-                                <a class="btn btn-primary " id="buy" href="#" >一键购买</a> &nbsp;&nbsp;<a class="btn" id="addcart"
-                                                                                            href="#">加入购物车</a>
+                                <a class="btn btn-outline-primary" id="addcart" href="#">加入购物车</a>
                             </p>
                         </div>
                     </div>
@@ -386,22 +386,38 @@
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/scripts.js' %}"></script>
 <script src="{% static 'js/num-alignment.js' %}"></script>
-<script>
-    $('#buy').click(function () {
-        if ('{{ could_buy }}'=='1')
-        {
-            alert("没有支付密码或者缺货");
-            return 1;
-        }
-    })
-</script>
+
 <script>
     $('#addcart').click(function () {
         if ('{{ could_buy }}'=='1')
         {
-            alert("没有支付密码或者缺货");
+            alert("该物品可能缺货，您可能未设置支付密码，请前往个人中心设置支付密码");
             return 1;
         }
+        var id = $('#id').val();
+        var nums = $('#nums').val();
+        $.ajax({
+                cache: false,
+                type: "GET",
+                url: "{% url 'commoditys:addtocart' %}",
+                data: {'id': id, 'count': nums},
+                async: true,
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function (data) {
+                    if (data.status == 'fail') {
+                        alert("添加失败,可能原因：\n您的购物车已有此商品，商品数量不够");
+
+                    } else if (data.status == 'success') {
+                        if(confirm("已添加成功，是否前往购物车结算")){
+                            window.location.href="{% url 'users:cart' %}";
+
+　　
+                        }
+                    }
+                },
+            });
     })
 </script>
 </body>

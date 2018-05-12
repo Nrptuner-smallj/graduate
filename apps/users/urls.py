@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .views import RegisterView, GetEmailCodeView, LoginView, LogoutView, ForgetPwdView, UserCenterIndexView,ModifyPwdView
-from .views import ModifyEmailView,AddressListView,AddAddressView,DeleteAddressView,WalletView
+from .views import ModifyEmailView,AddressListView,AddAddressView,DeleteAddressView,WalletView,CartView,ChangeCartView
+from .views import DeteleCartView,UnpaidOrderView,DeleteUnpaidOrderView,Pay1View,PaidOrderView
 
 
 app_name = 'users'
@@ -18,4 +19,11 @@ urlpatterns = [
     path('addaddress/<int:address_id>',AddAddressView.as_view(),name="addaddress"),
     path('deleteaddress/<int:address_id>',DeleteAddressView.as_view(),name="deleteaddress"),
     path('wallet/',WalletView.as_view(),name="wallet"),
+    path('cart/',CartView.as_view(),name='cart'),
+    path('changecart/',ChangeCartView.as_view(),name='changecart'),
+    path('deletecart/<int:cart_id>',DeteleCartView.as_view(),name='deletecart'),
+    path('unpaidorder/',UnpaidOrderView.as_view(),name='unpaidorder'),
+    path('delunpaidorder/<str:order_id>/',DeleteUnpaidOrderView.as_view(),name='delunpaidorder'),
+    path('pay1',Pay1View.as_view(),name='pay1'),
+    path('paidorder/',PaidOrderView.as_view(),name="paidorder"),
 ]

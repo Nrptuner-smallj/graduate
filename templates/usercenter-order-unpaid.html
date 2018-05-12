@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 {% load staticfiles %}
-<html lang="en">
+<html lang="cn">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +11,7 @@
     <meta name="description" content="Source code generated using layoutit.com">
     <meta name="author" content="LayoutIt!">
 
-    <link href="{% static 'bootstrap/css/bootstrap.min.css'  %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
 
 </head>
@@ -81,72 +81,131 @@
             <div class="list-group">
                 <a href="{% url 'users:usercenter' %}" class="list-group-item ">个人中心</a>
                 <a href="#" class="list-group-item ">购物车</a>
-                <a href="#" class="list-group-item ">我的订单</a>
+                <a href="#" class="list-group-item list-group-item-action active">我的订单</a>
                 <a href="#" class="list-group-item ">我的书单</a>
                 <a href="#" class="list-group-item ">我的地址</a>
-                <a href="#" class="list-group-item list-group-item-action active">我的钱包</a>
+                <a href="#" class="list-group-item ">我的钱包</a>
                 <a href="#" class="list-group-item ">我的消息 <span class="badge badge-light badge-pill">4</span></a>
             </div>
         </div>
         <div class="col-md-9">
-            <nav>
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="#">个人中心</a>
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a href="#">个人消息</a>
-                    </li>
-
-                </ol>
-            </nav>
             <div class="row">
-
-                <div class="col-md-8">
-
-                    <br>
-
-                        <div class="form-group">
-
-                            <label for="username"><h4>钱包余额:</h4>
-
-                            </label>
-                            <span id="username">{{ user.wallet }}</span>
-                        </div>
-                        <div class="form-group">
-
-                            <label for="paypassword">
-                                设置/修改支付密码
-                            </label>
-                            <input type="hidden" value="{{ user.email }}" id="email">
-                            <input class="form-control" id="paypassword" type="password" maxlength="6" name="paypass"
-                                   placeholder="支付密码" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" oninput="changeVal(this)">
-
-                        </div>
-                        <div class="form-group">
-
-                            <label for="captcha">
-                                验证码
-                            </label>
-                            <div class="form-group">
-
-                                <input type="text" style="width: 70%;float: left"
-                                       class="form-control" id="code" name="code" placeholder="邮箱验证码">
-                                <span class="input-group-btn">
-						<button class="btn btn-primary" type="button" style="width:auto;float: right" id="getcaptcha">
-							获取验证码
-						</button>
-					</span>
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" id="save" disabled="disabled">
-                            保存信息
-                        </button>
-                        <br><br>
-
-
-
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">未支付</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'users:paidorder' %}">待收货</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="#">已完成</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link " href="#">售后/退货</a>
+                        </li>
+                    </ul>
                 </div>
+            </div>
+            <div class="row">
+                {% for order in all_orders.object_list %}
+                    <div class="col-md-12 card" style="margin-bottom: 10px;margin-top: 10px">
+                    <table class="table ">
+                    <form method="get" action="{% url 'users:pay1' %}">
+                        <thead>
+                        <tr>
+                            <th>
+                                订单编号：{{ order.id }}<input hidden="hidden" name="order_id" value="{{ order.id }}">
+                            </th>
+                            <th>
+                                日期：{{ order.add_time }}
+                            </th>
+
+                            <th>
+                                <button class="btn  btn-outline-primary">前往支付</button>
+                            </th>
+                            <th>
+                                <a class="btn  btn-outline-primary" href="{% url 'users:delunpaidorder' order.id %}" >删除订单</a>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in order.get_delivery %}
+                            <tr>
+                            <td>
+                                <div style="display: inline">
+
+                                <a href="{% url 'commoditys:detail' item.commodity.id %}"><img src="{{ MEDIA_URL }}{{ item.commodity.image }}" alt="" style="width: auto;height: 80px;float: left;margin-right: 10px"></a>
+                                <p style="font-size: smaller">{{ item.commodity.name }}<br>{{ item.commodity.publisher }}<br>{{ item.commodity.author }}</p>
+                            </div>
+                            </td>
+                            <td>
+                                数量：{{ item.nums }}
+                            </td>
+                            <td>
+                                价格：{{ item.get_totalprice }}
+                            </td>
+                            <td></td>
+
+                        </tr>
+                            {% endfor %}
+
+
+
+                        <tr class="table-danger">
+                            <td>
+                                总价：{{ order.total_price }}
+                            </td>
+                            <td colspan="3">{{ order.get_delivery.0.address }}</td>
+
+
+                        </tr>
+                        </tbody>
+                    </form>
+                    </table>
+                </div>
+                {% endfor %}
+
+
+                <div class="text-center" style="text-align: right;vertical-align: center;display: table;height: 30px;
+    margin: 50px auto;">
+
+                       <nav>
+                            <ul class="pagination">
+                                {% if all_orders.has_previous %}
+                                    <li class="page-item"><a class="page-link"
+                                                             href="?{{ all_orders.previous_page_number.querystring }}">上一页</a>
+                                    </li>
+                                {% endif %}
+                                {% for page in all_orders.pages %}
+
+                                    {% if page %}
+                                        {% ifequal page all_orders.number %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{{ page.querystring }}"
+                                                   style="color: #c12e2a">{{ page }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{{ page.querystring }}">{{ page }}</a>
+                                            </li>
+                                        {% endifequal %}
+
+                                    {% endif %}
+
+                                {% endfor %}
+                                {% if all_orders.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?{{ all_orders.next_page_number.querystring }}">下一页</a>
+                                    </li>
+                                {% endif %}
+
+
+                            </ul>
+                        </nav>
+
+                    </div>
             </div>
         </div>
     </div>
@@ -193,98 +252,7 @@
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/scripts.js' %}"></script>
 <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
-<script>function changeVal(value) {
-    pass = document.getElementById("paypassword").value;
-    if (pass.length==6)
-    {
-        $("#save").val("Submit").removeAttr("disabled");
 
-
-    }
-    else if (pass.length<6)
-    {
-        $("#save").attr("disabled", true);
-
-    }
-}</script>
- <script type="text/javascript">
-        $(function () {
-            $('#getcaptcha').click(function () {
-                var email = $('#email').val();
-
-                $.ajax({
-                    cache: false,
-                    type: "POST",
-                    url: "{% url 'users:getcode' %}",
-                    data: {'email': email,'type':'modifypaypwd'},
-                    async: true,
-                    beforeSend: function (xhr, settings) {
-                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-                    },
-                    success: function (data) {
-                        if (data.status == 'fail') {
-                            alert("发送失败");
-                            return 1;
-
-                        } else if (data.status == 'success') {
-                            alert("发送成功，请查收,注意检查您的垃圾箱");
-                        }
-                    },
-                });
-                var count = 30;
-                var countdown = setInterval(CountDown, 1000);
-                function CountDown() {
-                    $("#getcaptcha").attr("disabled", true);
-                    $("#getcaptcha").text("请等待 " + count + " 秒!");
-                    if (count == 0) {
-                        $("#getcaptcha").val("Submit").removeAttr("disabled");
-                        $("#getcaptcha").text("获取验证码")
-                        clearInterval(countdown);
-                    }
-                    count--;
-                }
-            })
-
-        });
-   </script>
-<script>
-    $('#save').click(function () {
-
-        var paypass = $('#paypassword').val();
-        var email = $('#email').val();
-        try{
-            Number(paypass);
-        }
-        catch (e) {
-            alert("密码格式不正确");
-            return 1;
-        }
-        var code = $('#code').val()
-        if (code == ''||paypass.length<6){
-            alert("验证码不得为空且密码为6位数字");
-            return 1;
-        }
-        $.ajax({
-                    cache: false,
-                    type: "POST",
-                    url: "{% url 'users:wallet' %}",
-                    data: {'paypwd': paypass,'code':code,'email':email},
-                    async: true,
-                    beforeSend: function (xhr, settings) {
-                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
-                    },
-                    success: function (data) {
-                        if (data.status == 'fail') {
-                            alert("验证码不正确");
-                            return 1;
-
-                        } else if (data.status == 'success') {
-                            alert("设置成功");
-                        }
-                    },
-                });
-    })
-</script>
 
 </body>
 </html>

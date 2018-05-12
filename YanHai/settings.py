@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'users',
     'commoditys',
     'opreation',
+    'orders',
     'xadmin',
     'crispy_forms',
     'pure_pagination'

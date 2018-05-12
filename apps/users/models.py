@@ -53,3 +53,10 @@ class Address(models.Model):
 
     def __str__(self):
         return "{}{}{}{}{}".format(self.province,self.city,self.region,self.town,self.detail)
+
+    def get_display(self):
+        if self.town:
+            return "{}{}{}{}{}  {}  {}".format(self.province,self.city,self.region,self.town,self.detail,self.name,self.tel)
+        else:
+            return "{}{}{}{}  {}  {}".format(self.province, self.city, self.region, self.detail, self.name,
+                                               self.tel)

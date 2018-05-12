@@ -3,13 +3,16 @@ import json
 from django.shortcuts import render
 from django.views.generic.base import View
 from django.http import HttpResponse, HttpResponseRedirect
-from django.contrib.auth.hashers import make_password,check_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
+from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 
-from .forms import RegisterForm, LoginForm,ForgetPwdForm,ModifyForm,AddressForm
-from .models import UserProfile, EmailCode,Address
+from .forms import RegisterForm, LoginForm, ForgetPwdForm, ModifyForm, AddressForm
+from .models import UserProfile, EmailCode, Address
+from opreation.models import ShopCartRecord
+from orders.models import Order, DeliveryOrder
 from utils.emailsend import send_email
 
 
@@ -93,7 +96,7 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         from django.urls import reverse
-        return HttpResponseRedirect(reverse("index"),{})
+        return HttpResponseRedirect(reverse("index"), {})
 
 
 class ForgetPwdView(View):
@@ -102,30 +105,29 @@ class ForgetPwdView(View):
     def get(self, request):
         return render(request, 'forgetpwd.html')
 
-
-    def post(self,request):
+    def post(self, request):
         forgetpwd_form = ForgetPwdForm(request.POST)
         if forgetpwd_form.is_valid():
 
             email = request.POST.get("email")
             if not UserProfile.objects.filter(email=email):
-                return render(request,"forgetpwd.html",dict(msg="没有查找到用户"))
+                return render(request, "forgetpwd.html", dict(msg="没有查找到用户"))
 
             code = request.POST.get("code")
-            if not EmailCode.objects.filter(send_type="forgetpwd",email=email,code=code):
-                return render(request,"forgetpwd.html",dict(msg="验证码输入错误"))
+            if not EmailCode.objects.filter(send_type="forgetpwd", email=email, code=code):
+                return render(request, "forgetpwd.html", dict(msg="验证码输入错误"))
 
             password1 = request.POST.get("password1")
             password2 = request.POST.get("password2")
             if password1 != password2:
-                return render(request,"forgetpwd.html",dict(msg = "密码不一致"))
+                return render(request, "forgetpwd.html", dict(msg="密码不一致"))
 
             user = UserProfile.objects.get(email=email)
-            user.password=make_password(password1)
+            user.password = make_password(password1)
             user.save()
-            return render(request,"login.html")
+            return render(request, "login.html")
         else:
-            return render(request,"forgetpwd.html",dict(forgetpwd_form=forgetpwd_form))
+            return render(request, "forgetpwd.html", dict(forgetpwd_form=forgetpwd_form))
 
 
 class GetEmailCodeView(View):
@@ -147,11 +149,10 @@ class GetEmailCodeView(View):
 
 class UserCenterIndexView(View):
 
+    def get(self, request):
+        return render(request, "usercenter-index.html", dict(user=request.user))
 
-    def get(self,request):
-        return render(request,"usercenter-index.html",dict(user = request.user))
-
-    def post(self,request):
+    def post(self, request):
         modify_form = ModifyForm(request.POST)
         if modify_form.is_valid():
             user = request.user
@@ -159,18 +160,18 @@ class UserCenterIndexView(View):
             gender = request.POST.get("gender")
             tel = request.POST.get("tel")
             user.birthday = birthday
-            user.tel =tel
+            user.tel = tel
             user.gender = gender
             user.save()
             return render(request, "usercenter-index.html", dict(msg="保存成功"))
         else:
-            return render(request,"usercenter-index.html",dict(modify_form=modify_form))
+            return render(request, "usercenter-index.html", dict(modify_form=modify_form))
 
 
 class ModifyPwdView(View):
     """个人中心修改密码"""
 
-    def post(self,request):
+    def post(self, request):
         oldpwd = request.POST.get('oldpass')
         newpwd = request.POST.get('newpass')
         user = request.user
@@ -185,7 +186,7 @@ class ModifyPwdView(View):
 class ModifyEmailView(View):
     """个人中心修改邮箱"""
 
-    def post(self,request):
+    def post(self, request):
         email = request.POST.get("email")
         code = request.POST.get("code")
         if not EmailCode.objects.filter(send_type="modifyemail", email=email, code=code):
@@ -195,24 +196,26 @@ class ModifyEmailView(View):
         user.save()
         return HttpResponse('{"status":"success"}', content_type='application/json')
 
+
 class AddressListView(View):
     """个人地址展示"""
 
-    def get(self,request):
+    def get(self, request):
         addresses = Address.objects.filter(user=request.user)
-        return render(request,"usercenter-address.html",dict(addresses=addresses))
+        return render(request, "usercenter-address.html", dict(addresses=addresses))
+
 
 class AddAddressView(View):
     """添加或修改个人地址"""
 
-    def get(self,request,address_id):
+    def get(self, request, address_id):
         if address_id == 0:
-            return render(request,"usercenter-addaddress.html",dict(id=address_id))
+            return render(request, "usercenter-addaddress.html", dict(id=address_id))
         else:
             address = Address.objects.get(id=address_id)
-            return render(request,"usercenter-addaddress.html",dict(address=address,id=address_id))
+            return render(request, "usercenter-addaddress.html", dict(address=address, id=address_id))
 
-    def post(self,request,address_id):
+    def post(self, request, address_id):
         # id为0的话是添加，不为0则是修改
         if address_id == 0:
             content = request.POST.get("address")
@@ -220,14 +223,14 @@ class AddAddressView(View):
             name = request.POST.get("name")
             tel = request.POST.get("tel")
             contents = str(content).split('/')
-            if len(contents)<3 or detail == '' or name=='' or tel == '' or len(tel)>11:
-                return render(request,'usercenter-addaddress.html',dict(id=address_id,msg="缺少必填字段或错误"))
+            if len(contents) < 3 or detail == '' or name == '' or tel == '' or len(tel) > 11:
+                return render(request, 'usercenter-addaddress.html', dict(id=address_id, msg="缺少必填字段或错误"))
             else:
                 address = Address()
                 address.province = contents[0]
                 address.city = contents[1]
                 address.region = contents[2]
-                if len(contents)>3:
+                if len(contents) > 3:
                     address.town = contents[3]
                 address.tel = tel
                 address.name = name
@@ -262,8 +265,8 @@ class AddAddressView(View):
 
 class DeleteAddressView(View):
 
-    def get(self,request,address_id):
-        address = Address.objects.get(id = address_id)
+    def get(self, request, address_id):
+        address = Address.objects.get(id=address_id)
         address.delete()
         from django.urls import reverse
         return HttpResponseRedirect(reverse('users:addresslist'))
@@ -272,14 +275,14 @@ class DeleteAddressView(View):
 class WalletView(View):
     """我的钱包"""
 
-    def get(self,request):
+    def get(self, request):
         user = request.user
-        return render(request,"usercenter-wallet.html",dict(user=user))
+        return render(request, "usercenter-wallet.html", dict(user=user))
 
-    def post(self,request):
-        code = request.POST.get('code','')
+    def post(self, request):
+        code = request.POST.get('code', '')
         paypass = request.POST.get('paypwd')
-        if not EmailCode.objects.filter(email=request.user.email,code=code,send_type='modifypaypwd'):
+        if not EmailCode.objects.filter(email=request.user.email, code=code, send_type='modifypaypwd'):
             return HttpResponse('{"status":"fail"}', content_type='application/json')
         else:
             user = request.user
@@ -288,6 +291,86 @@ class WalletView(View):
             return HttpResponse('{"status":"success"}', content_type='application/json')
 
 
+class CartView(View):
+    """购物车"""
+
+    def get(self, request):
+        myshopcart = ShopCartRecord.objects.filter(user=request.user)
+        return render(request, 'usercenter-cart.html', dict(myshopcart=myshopcart))
 
 
+class ChangeCartView(View):
+    """修改购物车的信息"""
+
+    def get(self, request):
+        id = request.GET.get('id')
+        nums = request.GET.get('nums')
+        record = ShopCartRecord.objects.get(id=id)
+        record.nums = nums
+        record.save()
+        if int(record.nums) > record.commodity.stock:
+            return HttpResponse('{"status":"success","msg":"buzu"}', content_type='application/json')
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+
+
+class DeteleCartView(View):
+    """删除购物车信息"""
+
+    def get(self, request, cart_id):
+        record = ShopCartRecord.objects.get(id=cart_id)
+        record.delete()
+        from django.urls import reverse
+        return HttpResponseRedirect(reverse('users:cart'))
+
+
+class UnpaidOrderView(View):
+    """用户未完成的订单"""
+
+    def get(self, request):
+        all_orders = Order.objects.filter(user=request.user, status='unpaid')
+        # 进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_orders, 2, request=request)
+
+        all_orders = p.page(page)
+        return render(request, "usercenter-order-unpaid.html", dict(all_orders=all_orders))
+
+
+class DeleteUnpaidOrderView(View):
+    """删除未完成的订单"""
+
+    def get(self, request, order_id):
+        order = Order.objects.get(id=order_id)
+        order.delete()
+        from django.urls import reverse
+        return HttpResponseRedirect(reverse('users:unpaidorder'))
+
+
+class Pay1View(View):
+    """从未完成订单前往付款界面"""
+
+    def get(self, request):
+        order_id = request.GET.get('order_id')
+        order = Order.objects.get(id=order_id)
+        return render(request, 'pay.html', dict(order=order))
+
+
+class PaidOrderView(View):
+    """已付款的订单界面"""
+    def get(self,request):
+        all_orders = Order.objects.filter(user=request.user, status='paid')
+        # 进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_orders, 2, request=request)
+
+        all_orders = p.page(page)
+        return render(request, "usercenter-order-paid.html", dict(all_orders=all_orders))
 
