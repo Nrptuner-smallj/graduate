@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import RegisterView, GetEmailCodeView, LoginView, LogoutView, ForgetPwdView, UserCenterIndexView,ModifyPwdView
 from .views import ModifyEmailView,AddressListView,AddAddressView,DeleteAddressView,WalletView,CartView,ChangeCartView
-from .views import DeteleCartView,UnpaidOrderView,DeleteUnpaidOrderView,Pay1View,PaidOrderView
+from .views import DeteleCartView,UnpaidOrderView,DeleteUnpaidOrderView,Pay1View,PaidOrderView,ConfirmRecView,FinshedOrderView
 
 
 app_name = 'users'
@@ -26,4 +26,6 @@ urlpatterns = [
     path('delunpaidorder/<str:order_id>/',DeleteUnpaidOrderView.as_view(),name='delunpaidorder'),
     path('pay1',Pay1View.as_view(),name='pay1'),
     path('paidorder/',PaidOrderView.as_view(),name="paidorder"),
+    path('conrec/',ConfirmRecView.as_view(),name='conrec'),
+    path('finishedorder/',FinshedOrderView.as_view(),name='finishedorder')
 ]

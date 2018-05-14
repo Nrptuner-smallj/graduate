@@ -57,6 +57,7 @@ class UserComment(models.Model):
     user = models.ForeignKey(UserProfile,verbose_name="用户",on_delete=models.CASCADE)
     commodity = models.ForeignKey(Commodity,verbose_name="商品",on_delete=models.CASCADE)
     add_time = models.DateTimeField(default=datetime.now,verbose_name="评论时间")
+    is_anon = models.BooleanField(default=False,verbose_name="是否匿名")
 
     class Meta:
         verbose_name = "用户评论"

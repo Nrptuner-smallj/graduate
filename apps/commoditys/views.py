@@ -9,7 +9,7 @@ from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 from django.contrib.auth.hashers import make_password, check_password
 
 from .models import Commodity
-from opreation.models import LackCommodity, ShopCartRecord
+from opreation.models import LackCommodity, ShopCartRecord,UserComment
 from orders.models import Order, DeliveryOrder
 
 
@@ -199,7 +199,6 @@ class PayView(View):
         order_id = request.POST.get('order_id')
         paypwd = request.POST.get('paypwd')
 
-
         order = Order.objects.get(id=order_id)
         user = request.user
         # 检查支付密码
@@ -224,3 +223,19 @@ class PayView(View):
         order.save()
         from django.urls import reverse
         return HttpResponseRedirect(reverse('users:paidorder'))
+
+
+class AddCommentView(View):
+    """商品评论"""
+
+    def get(self, request,commodity_id):
+        commodity = Commodity.objects.get(id=commodity_id)
+        recommend = Commodity.objects.filter(catagory=commodity.catagory)[:5]
+        could_buy = 0
+        if commodity.stock == 0:
+            could_buy = 1
+        if request.user.is_authenticated:
+            if request.user.paypass == '':
+                could_buy = 1
+        comments = UserComment.objects.filter(commodity=commodity)
+        return render(request,"commditycomment.html",dict(commodity=commodity,recommend=recommend,could_buy=could_buy,comments=comments))

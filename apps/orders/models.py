@@ -25,6 +25,12 @@ class Order(models.Model):
     def __str__(self):
         return self.id
 
+    def isallout(self):
+        for delivery in self.get_delivery().all():
+            if delivery.status == 'ing':
+                return False
+        return True
+
 class DeliveryOrder(models.Model):
     id = models.CharField(max_length=26,verbose_name="出货单号",primary_key=True)
     address = models.CharField(max_length=200,verbose_name="收货信息",null=True,blank=True)

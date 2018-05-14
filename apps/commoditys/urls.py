@@ -1,7 +1,8 @@
 from django.urls import path
 
 
-from .views import SearchView,DetailView,LackView,AddToShopCart,ToConfirmView,ConfirmInfoView,PayView
+from .views import SearchView,DetailView,LackView,AddToShopCart,ToConfirmView,ConfirmInfoView,PayView,AddCommentView
+
 
 import users.views
 
@@ -14,5 +15,6 @@ urlpatterns = [
     path('toconfirm/',ToConfirmView.as_view(),name='toconfirm'),
     path('confirminfo/',ConfirmInfoView.as_view(),name='confirminfo'),
     path('pay/',PayView.as_view(),name='pay'),
+    path('comment/<str:commodity_id>/',AddCommentView.as_view(),name='comment')
 
 ]

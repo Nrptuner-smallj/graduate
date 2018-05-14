@@ -112,7 +112,9 @@
                     <div class="col-md-12 card" style="margin-bottom: 10px;margin-top: 10px">
                     <table class="table ">
                         <thead>
+
                         <tr>
+                            <form>
                             <th>
                                 订单编号：{{ order.id }}
                             </th>
@@ -121,11 +123,12 @@
                             </th>
 
                             <th>
-                                <button class="btn  btn-outline-primary">确认收货</button>
+                                <button class="btn  btn-outline-primary confirmrec" {% if order.isallout %}{% else %}disabled="disabled" title="货物尚未发出" {% endif %} >确认收货</button>
                             </th>
                             <th>
 
                             </th>
+                                </form>
                         </tr>
                         </thead>
                         <tbody>
@@ -310,12 +313,42 @@
 <script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
 <script>
     $("button[name='return']").click(function () {
-
         var out_id = $(this).parent().parent().children('td').eq(0).text();
         $('#id').val(out_id);
         $('#mydialog').modal('show');
 
+
+
     })
+</script>
+<script>
+    $('.confirmrec').click(function () {
+        var id =$(this).parent().parent().children('th').eq(0).text();
+        if (!confirm("您确定已经收到？"))
+        {
+            return 1;
+        }
+        $.ajax({
+                    cache: false,
+                    type: "GET",
+                    url: "{% url 'users:conrec' %}",
+                    data: {'id': id},
+                    async: true,
+                    beforeSend: function (xhr, settings) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    },
+                    success: function (data) {
+                        if (data.status == 'fail') {
+
+                        } else if (data.status == 'success') {
+                            window.location.href="{% url 'users:finishedorder' %}";
+
+
+                        }
+                    },
+                });
+    })
+
 </script>
 
 </body>

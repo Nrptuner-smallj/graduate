@@ -12,7 +12,9 @@
     <meta name="author" content="LayoutIt!">
 
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
+
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/rating-min.css' %}">
     <style type="text/css" rel="stylesheet">
         td {
             white-space: nowrap;
@@ -57,9 +59,9 @@
                             </div>
                         </li>
                     </ul>
-                    <form class="form-inline" method="get" action="{% url 'commoditys:list' %}">
-                        <input class="form-control mr-sm-2" type="text" id="keywords" name="keywords" value="{{ key_word }}">
-                        <button class="btn btn-primary my-2 my-sm-0" type="submit">
+                    <form class="form-inline">
+                        <input class="form-control mr-sm-2" type="text">
+                        <button class="btn btn-primary my-2 my-sm-0" type="submit" id="search">
                             搜索
                         </button>
                     </form>
@@ -227,119 +229,124 @@
         </div>
     </div>
     <br>
-<br>
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link active" href="#">商品介绍</a>
+                <a class="nav-link " href="{% url 'commoditys:detail' commodity.id %}">商品介绍</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'commoditys:comment' commodity.id %}">评论</a>
+                <a class="nav-link active" href="#">评论</a>
             </li>
 
         </ul>
     </div>
     <div class="col-md-1"></div>
 </div>
+<br>
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
+        <form role="form">
+            <div class="form-group">
 
-        <br>
-        <div class="card">
-            <h5 class="card-header">
-                商品信息
-            </h5>
-            <div class="card-body" style="font-size: small;">
-                <p class="card-text" style="margin-left: 10px">
-                <table class="table" style="max-width:1000px;table-layout: fixed;margin-left: 15px">
-
-                    <tbody>
-                    <tr>
-
-                        <td>
-                            书名：{{ commodity.name }}
-                        </td>
-                        <td>
-                            作者：{{ commodity.author }}
-                        </td>
-                        <td>
-                            出版社：{{ commodity.publisher }}
-                        </td>
-
-                    </tr>
-                    <tr class="">
-
-                        <td>
-                            ISBN：{{ commodity.isbn }}
-                        </td>
-                        <td>
-                            开本：{{ commodity.size }}
-                        </td>
-                        <td>
-                            出版日期：{{ commodity.pubdate }}
-                        </td>
-
-
-                    </tr>
-                    <tr class="">
-
-                        <td>
-                            子分类：{{ commodity.catagory.name }}
-                        </td>
-                        <td>
-                            系统编码：{{ commodity.id }}
-                        </td>
-                        <td>
-
-                        </td>
-
-
-                    </tr>
-
-                    </tbody>
-                </table>
-
-                </p>
+                <label for="content">
+                    提交我的评论
+                </label>
+                <textarea id="content" class="form-control" rows="5" maxlength="400"></textarea>
             </div>
+            <div class="form-group">
 
-        </div>
-        <br>
-        <div class="card">
-            <h5 class="card-header">
-                商品介绍
+                <label for="rate">
+                    打分
+                </label>
+                     <input id="rate" type="number"/>
+
+                </div>
+
+
+            <div class="checkbox">
+
+                <label>
+                    <input type="checkbox"/> 匿名提交
+                </label>
+            </div>
+            <input type="submit" class="btn btn-primary" value="提交我的评论">
+
+
+            <br>
+            <br>
+        </form>
+    </div>
+    <br>
+    <br>
+    <div class="col-md-1"></div>
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div class="card" style="margin-bottom: 6px;">
+            <h5 class="card-header" style="font-size: medium;">
+                海王星人（评分：5分）
             </h5>
             <div class="card-body">
-                <p class="card-text">
-                <p style="margin: 20px;">
-                    {{ desc|linebreaks }}
-                </p>
+                <p class="card-text" style="font-size: small;word-wrap: break-word">
+                <p style="margin: 9px">很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
+
                 </p>
             </div>
-
+            <div class="card-footer" style="font-size: small">
+                时间：2018年4月30日
+            </div>
         </div>
-        <br>
-        <div class="card">
-            <h5 class="card-header">
-                商品目录
+        <div class="card" style="margin-bottom: 6px;">
+            <h5 class="card-header" style="font-size: medium;">
+                海王星人（评分：5分）
             </h5>
             <div class="card-body">
-                <p class="card-text">
-                <p style="margin-left: 30px;margin-top: 10px;margin-bottom: 10px;font-size: small">
-
-                    {{ catalog|linebreaksbr }}
-
+                <p class="card-text" style="font-size: small;word-wrap: break-word">
+                <p style="margin: 9px">很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
 
                 </p>
-                </p>
-
             </div>
+            <div class="card-footer" style="font-size: small">
+                时间：2018年4月30日
+            </div>
+        </div>
+        <div class="card" style="margin-bottom: 6px;">
+            <h5 class="card-header" style="font-size: medium;">
+                海王星人（评分：5分）
+            </h5>
+            <div class="card-body">
+                <p class="card-text" style="font-size: small;word-wrap: break-word">
+                <p style="margin: 9px">很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
 
+                </p>
+            </div>
+            <div class="card-footer" style="font-size: small">
+                时间：2018年4月30日
+            </div>
+        </div>
+        <div class="card" style="margin-bottom: 6px;">
+            <h5 class="card-header" style="font-size: medium;">
+                海王星人（评分：5分）
+            </h5>
+            <div class="card-body">
+                <p class="card-text" style="font-size: small">
+                <p style="margin: 9px;word-wrap: break-word">
+                    很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd</p>
+
+                </p>
+            </div>
+            <div class="card-footer" style="font-size: small">
+                时间：2018年4月30日
+            </div>
         </div>
     </div>
     <div class="col-md-1"></div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+    </div>
 </div>
 <br>
 <br>
@@ -385,8 +392,12 @@
 <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/scripts.js' %}"></script>
-<script src="{% static 'js/num-alignment.js' %}"></script>
-
+<script src="{% static 'bootstrap/js/star-rating.js' %}" type="text/javascript"></script>
+<script src="{% static 'bootstrap/js/tipi.jquery.js' %}" type="text/javascript"></script>
+<script src="{% static 'bootstrap/js/rating.jquery.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/num-alignment.js' %}" type="text/javascript"></script>
+<script>$('#rate').rating({color: '#808080',
+  colorHover: '#0099FF'})</script>
 <script>
     $('#addcart').click(function () {
         if ('{{ could_buy }}'=='1')
@@ -420,5 +431,6 @@
             });
     })
 </script>
+
 </body>
 </html>

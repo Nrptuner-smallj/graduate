@@ -361,7 +361,8 @@ class Pay1View(View):
 
 class PaidOrderView(View):
     """已付款的订单界面"""
-    def get(self,request):
+
+    def get(self, request):
         all_orders = Order.objects.filter(user=request.user, status='paid')
         # 进行分页
         try:
@@ -374,3 +375,31 @@ class PaidOrderView(View):
         all_orders = p.page(page)
         return render(request, "usercenter-order-paid.html", dict(all_orders=all_orders))
 
+class ConfirmRecView(View):
+    """确认收到货"""
+
+    def get(self,request):
+        p_id = request.GET.get('id')
+        id = str(p_id).replace('订单编号：','').replace(' ','').replace('\n','')
+        nums = Order.objects.filter(id=id).count()
+        order = Order.objects.get(id=id)
+        order.status = 'finished'
+        order.save()
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+
+
+class FinshedOrderView(View):
+    """已完成界面"""
+
+    def get(self,request):
+        all_orders = Order.objects.filter(user=request.user,status='finished')
+        # 进行分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_orders, 2, request=request)
+
+        all_orders = p.page(page)
+        return render(request, "usercenter-order-finshed.html", dict(all_orders=all_orders))
