@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'orders',
     'xadmin',
     'crispy_forms',
-    'pure_pagination'
+    'pure_pagination',
+    'booklist',
 
 ]
 

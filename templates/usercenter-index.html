@@ -82,7 +82,7 @@
                 <a href="{% url 'users:usercenter' %}" class="list-group-item list-group-item-action active">个人中心</a>
                 <a href="{% url 'users:cart' %}" class="list-group-item ">购物车</a>
                 <a href="{% url 'users:unpaidorder' %}" class="list-group-item ">我的订单</a>
-                <a href="#" class="list-group-item ">我的书单</a>
+                <a href="{% url 'booklist:mybooklist'  %}" class="list-group-item ">我的书单</a>
                 <a href="{% url 'users:addresslist' %}" class="list-group-item ">我的地址</a>
                 <a href="{% url 'users:wallet' %}" class="list-group-item ">我的钱包</a>
                 <a href="usercenter-message.html" class="list-group-item ">我的消息 <span

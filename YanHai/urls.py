@@ -27,5 +27,6 @@ urlpatterns = [
     path('index/', TemplateView.as_view(template_name="index.html"), name='index'),
     path('users/', include('users.urls', namespace='users')),
     path('commoditys/', include('commoditys.urls', namespace='commoditys')),
+    path('booklist/',include('booklist.urls',namespace='booklist')),
     re_path('media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT})
 ]

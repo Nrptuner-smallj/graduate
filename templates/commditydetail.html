@@ -114,34 +114,45 @@
                             <div class="modal fade" id="modal-container-284005" role="dialog"
                                  aria-labelledby="myModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
+                                     <form>
                                     <div class="modal-content">
+
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="myModalLabel">
                                                 选择你的书单
                                             </h5>
+
                                             <button type="button" class="close" data-dismiss="modal">
                                                 <span aria-hidden="true">×</span>
+                                                <input hidden="hidden" value="{{ commodity.id }}" id="commodity">
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <select class="form-control">
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                            {% if user.is_authenticated %}
+                                            <select name="booklistchose" class="form-control" id="booklistchose">
+                                            {% for booklist in booklists %}
+                                                <option value="{{ booklist.id }}">{{ booklist.title }}</option>
+                                            {% endfor %}
                                             </select>
+                                                {% else %}
+                                                <span>您尚未登录</span>
+                                            {% endif %}
+
                                         </div>
                                         <div class="modal-footer">
-
-                                            <button type="button" class="btn btn-primary">
+                                            {% if user.is_authenticated %}
+                                                <button id="save" type="button" class="btn btn-primary">
                                                 保存到书单
                                             </button>
+                                            {% endif %}
+
+
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                                                 关闭
                                             </button>
                                         </div>
                                     </div>
+                                     </form>
 
                                 </div>
 
@@ -418,6 +429,35 @@
                     }
                 },
             });
+    })
+</script>
+<script>
+    $('#save').click(function () {
+        var booklist = $('#booklistchose').val();
+        var commodity = $('#commodity').val();
+
+        $.ajax({
+                cache: false,
+                type: "GET",
+                url: "{% url 'booklist:addbook' %}",
+                data: {'commodity_id': commodity, 'booklist_id': booklist},
+                async: true,
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function (data) {
+                    if (data.status == 'fail') {
+                        alert("添加失败,可能原因：\n这个书单已经存在这个商品");
+
+                    } else if (data.status == 'success') {
+                        alert("添加成功");
+                        $('#modal-container-284005').modal('hide');
+
+　　
+                        }
+                    }
+                },
+            );
     })
 </script>
 </body>
