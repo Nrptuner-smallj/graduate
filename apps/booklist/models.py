@@ -15,6 +15,8 @@ class BookList(models.Model):
     user = models.ForeignKey(UserProfile, verbose_name='用户', on_delete=models.CASCADE)
     cover = models.ImageField(upload_to='booklist/%Y/%m',verbose_name="封面",null=True,blank=True)
     add_time = models.DateTimeField(verbose_name='添加时间',default=datetime.now,null=True,blank=True)
+    fav_nums = models.IntegerField(verbose_name='收藏',default=0)
+    book_nums = models.IntegerField(verbose_name='书籍数',default=0)
 
     class Meta:
         verbose_name_plural = '书单'
@@ -23,8 +25,11 @@ class BookList(models.Model):
     def __str__(self):
         return self.title
 
-    def get_booknums(self):
-        return self.booklistdetail_set.all().count()
+    def set_favnums(self):
+        self.fav_nums = self.userfav_set.all().count()
+
+    def set_booknums(self):
+        self.book_nums = self.booklistdetail_set.all().count()
 
 
 class BookListDetail(models.Model):

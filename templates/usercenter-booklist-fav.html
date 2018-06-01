@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load staticfiles %}
 <html lang="cn">
 <head>
     <meta charset="utf-8">
@@ -10,8 +11,8 @@
     <meta name="description" content="Source code generated using layoutit.com">
     <meta name="author" content="LayoutIt!">
 
-    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="bootstrap/css/style.css" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
     <style type="text/css">
         td {
             width: 100%;
@@ -128,238 +129,35 @@
 
                 <div class="col-md-12">
                      <div class="row">
-                         <div class="col-md-3" style="margin-bottom: 5px">
+                         {% for booklist in booklists.object_list %}
+                             <div class="col-md-3" style="margin-bottom: 5px">
                             <div class="card">
                                 <div style="text-align: center">
-                                <img class="card-img-top"
+                                <a href="{% url 'booklist:detail' booklist.id %}"><img class="card-img-top"
                                      style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
+                                     alt="Bootstrap Thumbnail First" src="{{ MEDIA_URL }}{{ booklist.cover }}"></a></div>
                                 <div class="card-block">
                                     <h5 class="card-title">
-                                        让你动容的动画
+                                        {{ booklist.title }}
                                     </h5>
                                     <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
+                                标签：<span style="color: #cc3300;overflow: hidden;text-overflow: ellipsis;white-space: nowrap"><strong>{{ booklist.tag1 }}&nbsp;{{ booklist.tag2 }}</strong>&nbsp;
+                                </span>
                             </span>
                                     <br>
                                     <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
+                                <span style="color: #6b7879;float: left">{{ booklist.user.username }}</span>
+                                <span style="color: #6b7879;float: right">点击量：{{ booklist.click_nums }}</span>
                             </span>
                                     <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
+
+
+
 
                                 </div>
                             </div>
                         </div>
-                         <div class="col-md-3" style="margin-bottom: 5px">
-                            <div class="card">
-                                <div style="text-align: center">
-                                <img class="card-img-top"
-                                     style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
-                                <div class="card-block">
-                                    <h5 class="card-title">
-                                        让你动容的动画
-                                    </h5>
-                                    <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
-                            </span>
-                                    <br>
-                                    <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
-                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-md-3" style="margin-bottom: 5px">
-                            <div class="card">
-                                <div style="text-align: center">
-                                <img class="card-img-top"
-                                     style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
-                                <div class="card-block">
-                                    <h5 class="card-title">
-                                        让你动容的动画
-                                    </h5>
-                                    <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
-                            </span>
-                                    <br>
-                                    <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
-                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-md-3" style="margin-bottom: 5px">
-                            <div class="card">
-                                <div style="text-align: center">
-                                <img class="card-img-top"
-                                     style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
-                                <div class="card-block">
-                                    <h5 class="card-title">
-                                        让你动容的动画
-                                    </h5>
-                                    <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
-                            </span>
-                                    <br>
-                                    <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
-                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-md-3" style="margin-bottom: 5px">
-                            <div class="card">
-                                <div style="text-align: center">
-                                <img class="card-img-top"
-                                     style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
-                                <div class="card-block">
-                                    <h5 class="card-title">
-                                        让你动容的动画
-                                    </h5>
-                                    <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
-                            </span>
-                                    <br>
-                                    <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
-                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-md-3" style="margin-bottom: 5px">
-                            <div class="card">
-                                <div style="text-align: center">
-                                <img class="card-img-top"
-                                     style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
-                                <div class="card-block">
-                                    <h5 class="card-title">
-                                        让你动容的动画
-                                    </h5>
-                                    <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
-                            </span>
-                                    <br>
-                                    <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
-                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-md-3" style="margin-bottom: 5px">
-                            <div class="card">
-                                <div style="text-align: center">
-                                <img class="card-img-top"
-                                     style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
-                                <div class="card-block">
-                                    <h5 class="card-title">
-                                        让你动容的动画
-                                    </h5>
-                                    <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
-                            </span>
-                                    <br>
-                                    <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
-                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
-                         <div class="col-md-3" style="margin-bottom: 5px">
-                            <div class="card">
-                                <div style="text-align: center">
-                                <img class="card-img-top"
-                                     style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="img/booklist1.jpg"></div>
-                                <div class="card-block">
-                                    <h5 class="card-title">
-                                        让你动容的动画
-                                    </h5>
-                                    <span class="card-text">
-                                标签：<span style="color: #cc3300"><strong>动画</strong></span>&nbsp;&nbsp;
-                                <span style="color: #cc3300"><strong>小时候</strong></span>
-                            </span>
-                                    <br>
-                                    <span class="card-text" style="font-size: small">
-                                <span style="color: #6b7879;float: left">海王星人</span>
-                                <span style="color: #6b7879;float: right">点击量：300</span>
-                            </span>
-                                    <br>
-                                    <span class="card-text">
-                                <span style="display: block;font-size: smaller;overflow: hidden;text-overflow: ellipsis;word-break:keep-all;white-space: nowrap"
-                                      title="三国演义讲述的是">三国演义讲述的是汉朝末期三国争霸的故事，从董卓之乱开始一直到晋朝统一三国的长篇史诗，作者为罗贯中</span>
-                            </span>
-                                    </p>
-
-                                </div>
-                            </div>
-                        </div>
+                         {% endfor %}
 
                     </div>
                     <br>
@@ -369,27 +167,36 @@
 
                         <nav>
                             <ul class="pagination">
-                                <li class="page-item">
-                                    <a class="page-link" href="#">上一页</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">1</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">2</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">3</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">4</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">5</a>
-                                </li>
-                                <li class="page-item">
-                                    <a class="page-link" href="#">下一页</a>
-                                </li>
+                                {% if booklists.has_previous %}
+                                    <li class="page-item"><a class="page-link"
+                                                             href="?{{ booklists.previous_page_number.querystring }}">上一页</a>
+                                    </li>
+                                {% endif %}
+                                {% for page in booklists.pages %}
+
+                                    {% if page %}
+                                        {% ifequal page booklists.number %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{{ page.querystring }}"
+                                                   style="color: #c12e2a">{{ page }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{{ page.querystring }}">{{ page }}</a>
+                                            </li>
+                                        {% endifequal %}
+
+                                    {% endif %}
+
+                                {% endfor %}
+                                {% if booklists.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?{{ booklists.next_page_number.querystring }}">下一页</a>
+                                    </li>
+                                {% endif %}
+
+
                             </ul>
                         </nav>
 
@@ -438,10 +245,10 @@
 </div>
 </div>
 
-<script src="bootstrap/js/jquery.min.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
-<script src="bootstrap/js/scripts.js"></script>
-<script src="js/bootstrap-datepicker.js"></script>
+<script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'bootstrap/js/scripts.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
 
 
 </body>

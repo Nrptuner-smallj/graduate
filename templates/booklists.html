@@ -121,13 +121,13 @@
                         <div class="col-md-12">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item">
-                                    <a class="nav-link active" href="#">默认</a>
+                                    <a class="nav-link {% ifequal sort '' %}active{% endifequal %}" href="#">默认</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">点击量</a>
+                                    <a class="nav-link {% ifequal sort 'click' %}active{% endifequal %}" href="?sort=click&keywords={{ keyword }}">点击量</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link" href="#">收藏</a>
+                                    <a class="nav-link {% ifequal sort 'fav' %}active{% endifequal %}" href="?sort=fav&keywords={{ keyword }}">收藏</a>
                                 </li>
 
                             </ul>
@@ -140,9 +140,9 @@
                              <div class="col-md-3" style="margin-bottom: 5px">
                             <div class="card">
                                 <div style="text-align: center">
-                                <img class="card-img-top"
+                                <a href="{% url 'booklist:detail' booklist.id %}"><img class="card-img-top"
                                      style="margin-top:3px "
-                                     alt="Bootstrap Thumbnail First" src="{{ MEDIA_URL }}{{ booklist.cover }}"></div>
+                                     alt="Bootstrap Thumbnail First" src="{{ MEDIA_URL }}{{ booklist.cover }}"></a></div>
                                 <div class="card-block">
                                     <h5 class="card-title">
                                         {{ booklist.title }}
