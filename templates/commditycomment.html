@@ -113,37 +113,48 @@
                             <a id="modal-284005" href="#modal-container-284005" role="button" class="btn"
                                data-toggle="modal">添加到书单</a>
 
-                            <div class="modal fade" id="modal-container-284005" role="dialog"
+                           <div class="modal fade" id="modal-container-284005" role="dialog"
                                  aria-labelledby="myModalLabel" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
+                                     <form>
                                     <div class="modal-content">
+
                                         <div class="modal-header">
                                             <h5 class="modal-title" id="myModalLabel">
                                                 选择你的书单
                                             </h5>
+
                                             <button type="button" class="close" data-dismiss="modal">
                                                 <span aria-hidden="true">×</span>
+                                                <input hidden="hidden" value="{{ commodity.id }}" id="commodity">
                                             </button>
                                         </div>
                                         <div class="modal-body">
-                                            <select class="form-control">
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                            {% if user.is_authenticated %}
+                                            <select name="booklistchose" class="form-control" id="booklistchose">
+                                            {% for booklist in booklists %}
+                                                <option value="{{ booklist.id }}">{{ booklist.title }}</option>
+                                            {% endfor %}
                                             </select>
+                                                {% else %}
+                                                <span>您尚未登录</span>
+                                            {% endif %}
+
                                         </div>
                                         <div class="modal-footer">
-
-                                            <button type="button" class="btn btn-primary">
+                                            {% if user.is_authenticated %}
+                                                <button id="save" type="button" class="btn btn-primary">
                                                 保存到书单
                                             </button>
+                                            {% endif %}
+
+
                                             <button type="button" class="btn btn-secondary" data-dismiss="modal">
                                                 关闭
                                             </button>
                                         </div>
                                     </div>
+                                     </form>
 
                                 </div>
 
@@ -246,22 +257,26 @@
 </div>
 <br>
 <div class="row">
+{% ifequal could_comment 1 %}
     <div class="col-md-1"></div>
+
     <div class="col-md-10">
-        <form role="form">
+        <form role="form" method="post" action="{% url 'commoditys:addcomment' %}">
+            {% csrf_token %}
             <div class="form-group">
 
                 <label for="content">
                     提交我的评论
                 </label>
-                <textarea id="content" class="form-control" rows="5" maxlength="400"></textarea>
+                <textarea name="content" id="content" class="form-control" rows="5" maxlength="400"></textarea>
             </div>
             <div class="form-group">
 
                 <label for="rate">
                     打分
                 </label>
-                     <input id="rate" type="number"/>
+                     <input name="rank" id="rate" type="number"/>
+                <input hidden="hidden" name="id" value="{{ commodity.id }}">
 
                 </div>
 
@@ -269,7 +284,7 @@
             <div class="checkbox">
 
                 <label>
-                    <input type="checkbox"/> 匿名提交
+                    <input name="is_anon" type="checkbox"/> 匿名提交
                 </label>
             </div>
             <input type="submit" class="btn btn-primary" value="提交我的评论">
@@ -279,75 +294,52 @@
             <br>
         </form>
     </div>
+
     <br>
     <br>
     <div class="col-md-1"></div>
+{% endifequal %}
     <div class="col-md-1"></div>
     <div class="col-md-10">
+    {% ifequal comments.count 0 %}
         <div class="card" style="margin-bottom: 6px;">
+
+            <div class="card-body">
+                <p class="card-text" style="font-size: small;word-wrap: break-word">
+                <p style="margin: 9px">暂无评论</p>
+
+                </p>
+            </div>
+
+        </div>
+    {% endifequal %}
+        {% for comment in comments %}
+            <div class="card" style="margin-bottom: 6px;">
             <h5 class="card-header" style="font-size: medium;">
-                海王星人（评分：5分）
+                {% if comment.is_anon == 1 %}
+                    匿名用户(评分：{{ comment.rank }}分)
+                    {% else %}
+                    {{ comment.user.username }}(评分：{{ comment.rank }}分)
+                {% endif %}
             </h5>
             <div class="card-body">
                 <p class="card-text" style="font-size: small;word-wrap: break-word">
-                <p style="margin: 9px">很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
+                <p style="margin: 9px">{{ comment.content }}</p>
 
                 </p>
             </div>
             <div class="card-footer" style="font-size: small">
-                时间：2018年4月30日
+                时间：{{ comment.add_time }}
             </div>
         </div>
-        <div class="card" style="margin-bottom: 6px;">
-            <h5 class="card-header" style="font-size: medium;">
-                海王星人（评分：5分）
-            </h5>
-            <div class="card-body">
-                <p class="card-text" style="font-size: small;word-wrap: break-word">
-                <p style="margin: 9px">很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
+        {% endfor %}
 
-                </p>
-            </div>
-            <div class="card-footer" style="font-size: small">
-                时间：2018年4月30日
-            </div>
-        </div>
-        <div class="card" style="margin-bottom: 6px;">
-            <h5 class="card-header" style="font-size: medium;">
-                海王星人（评分：5分）
-            </h5>
-            <div class="card-body">
-                <p class="card-text" style="font-size: small;word-wrap: break-word">
-                <p style="margin: 9px">很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦</p>
 
-                </p>
-            </div>
-            <div class="card-footer" style="font-size: small">
-                时间：2018年4月30日
-            </div>
-        </div>
-        <div class="card" style="margin-bottom: 6px;">
-            <h5 class="card-header" style="font-size: medium;">
-                海王星人（评分：5分）
-            </h5>
-            <div class="card-body">
-                <p class="card-text" style="font-size: small">
-                <p style="margin: 9px;word-wrap: break-word">
-                    很不错的一本书，怕啦啦啦啦啦啦啦啦啦啦啦啦啦dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd</p>
-
-                </p>
-            </div>
-            <div class="card-footer" style="font-size: small">
-                时间：2018年4月30日
-            </div>
-        </div>
     </div>
     <div class="col-md-1"></div>
+
 </div>
-<div class="row">
-    <div class="col-md-12">
-    </div>
-</div>
+
 <br>
 <br>
 <div class="row">
@@ -431,6 +423,34 @@
             });
     })
 </script>
+<script>
+    $('#save').click(function () {
+        var booklist = $('#booklistchose').val();
+        var commodity = $('#commodity').val();
 
+        $.ajax({
+                cache: false,
+                type: "GET",
+                url: "{% url 'booklist:addbook' %}",
+                data: {'commodity_id': commodity, 'booklist_id': booklist},
+                async: true,
+                beforeSend: function (xhr, settings) {
+                    xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                },
+                success: function (data) {
+                    if (data.status == 'fail') {
+                        alert("添加失败,可能原因：\n这个书单已经存在这个商品");
+
+                    } else if (data.status == 'success') {
+                        alert("添加成功");
+                        $('#modal-container-284005').modal('hide');
+
+　　
+                        }
+                    }
+                },
+            );
+    })
+</script>
 </body>
 </html>

@@ -94,47 +94,47 @@
                     <h5>
                         确认您的订单信息
                     </h5>
-                <form role="form" method="get" action="{% url 'commoditys:pay' %}">
-                    <table class="table" style="max-width: 1000px;table-layout: fixed" id="info">
-                        <thead>
-                        <tr>
-                            <th>
-                                编号
-                            </th>
-                            <th>
-                                商品
-                            </th>
-                            <th>
-                                数量
-                            </th>
-                            <th>
-                                花费
-                            </th>
-
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for record in records %}
+                    <form role="form" method="get" action="{% url 'commoditys:pay' %}">
+                        <table class="table" style="max-width: 1000px;table-layout: fixed" id="info">
+                            <thead>
                             <tr>
-                                <td hidden="hidden"><input name="record_id" value="{{ record.id }}"></td>
-                                <td>
-                                    {{ record.commodity.id }}
-                                </td>
-                                <td>
-                                    {{ record.commodity.name }}
-                                </td>
-                                <td>
-                                    {{ record.nums }}
-                                </td>
-                                <td>
-                                    {{ record.get_price }}
-                                </td>
+                                <th>
+                                    编号
+                                </th>
+                                <th>
+                                    商品
+                                </th>
+                                <th>
+                                    数量
+                                </th>
+                                <th>
+                                    花费
+                                </th>
+
                             </tr>
-                        {% endfor %}
+                            </thead>
+                            <tbody>
+                            {% for record in records %}
+                                <tr>
+                                    <td hidden="hidden"><input name="record_id" value="{{ record.id }}"></td>
+                                    <td>
+                                        {{ record.commodity.id }}
+                                    </td>
+                                    <td>
+                                        {{ record.commodity.name }}
+                                    </td>
+                                    <td>
+                                        {{ record.nums }}
+                                    </td>
+                                    <td>
+                                        {{ record.get_price }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
 
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
 
                         <div class="form-group">
 
@@ -157,7 +157,7 @@
                         {#                            <input  class="form-control" style="width: 200px" id="paypassword" type="password"#}
                         {#                                   maxlength="6"  oninput="changeVal(this)">#}
                         {#                        </div>#}
-
+                        <p style="color:red;">{{ msg }}</p>
                         <button type="submit" class="btn btn-primary" id="confirm">
                             确认信息
                         </button>

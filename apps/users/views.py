@@ -12,7 +12,7 @@ from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 from .forms import RegisterForm, LoginForm, ForgetPwdForm, ModifyForm, AddressForm
 from .models import UserProfile, EmailCode, Address
 from opreation.models import ShopCartRecord
-from orders.models import Order, DeliveryOrder
+from orders.models import Order, DeliveryOrder,ReturnOrder
 from utils.emailsend import send_email
 
 
@@ -327,14 +327,14 @@ class UnpaidOrderView(View):
     """用户未完成的订单"""
 
     def get(self, request):
-        all_orders = Order.objects.filter(user=request.user, status='unpaid')
+        all_orders = Order.objects.filter(user=request.user, status='unpaid').order_by('-add_time')
         # 进行分页
         try:
             page = request.GET.get('page', 1)
         except PageNotAnInteger:
             page = 1
 
-        p = Paginator(all_orders, 2, request=request)
+        p = Paginator(all_orders, 5, request=request)
 
         all_orders = p.page(page)
         return render(request, "usercenter-order-unpaid.html", dict(all_orders=all_orders))
@@ -363,14 +363,14 @@ class PaidOrderView(View):
     """已付款的订单界面"""
 
     def get(self, request):
-        all_orders = Order.objects.filter(user=request.user, status='paid')
+        all_orders = Order.objects.filter(user=request.user, status='paid').order_by('-add_time')
         # 进行分页
         try:
             page = request.GET.get('page', 1)
         except PageNotAnInteger:
             page = 1
 
-        p = Paginator(all_orders, 2, request=request)
+        p = Paginator(all_orders, 5, request=request)
 
         all_orders = p.page(page)
         return render(request, "usercenter-order-paid.html", dict(all_orders=all_orders))
@@ -392,14 +392,62 @@ class FinshedOrderView(View):
     """已完成界面"""
 
     def get(self,request):
-        all_orders = Order.objects.filter(user=request.user,status='finished')
+        all_orders = Order.objects.filter(user=request.user,status='finished').order_by('-add_time')
         # 进行分页
         try:
             page = request.GET.get('page', 1)
         except PageNotAnInteger:
             page = 1
 
-        p = Paginator(all_orders, 2, request=request)
+        p = Paginator(all_orders, 5, request=request)
 
         all_orders = p.page(page)
         return render(request, "usercenter-order-finshed.html", dict(all_orders=all_orders))
+
+
+class ReturnView(View):
+    """退货"""
+
+    def post(self,request):
+        id = request.POST.get('orderid')
+        type = request.POST.get('hav_get','mc')
+        reason = request.POST.get('reason')
+        delivery = DeliveryOrder.objects.get(id=id)
+        record = ReturnOrder()
+        record.id = delivery.id.replace('C','R')
+        record.type = type
+        record.delivery = delivery
+        record.reason = reason
+        record.save()
+        from django.urls import reverse
+        return HttpResponseRedirect(reverse('users:returnorder'))
+
+
+class ReturnOrderView(View):
+    """退单界面"""
+
+    def get(self,request):
+        all_orders = ReturnOrder.objects.filter(delivery__order__user=request.user).order_by('-add_time')
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_orders, 5, request=request)
+
+        all_orders = p.page(page)
+        return render(request,'usercenter-order-return.html',dict(all_orders=all_orders))
+
+
+class AddReturnView(View):
+    """登记单号"""
+
+    def post(self,request):
+        id = request.POST.get('orderid')
+        express = request.POST.get('express')
+        returnorder = ReturnOrder.objects.get(id=id)
+        returnorder.tracking = express
+        returnorder.re_status = 'ing'
+        returnorder.save()
+        return HttpResponse('{"status":"success"}', content_type='application/json')
+

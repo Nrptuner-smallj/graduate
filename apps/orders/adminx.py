@@ -2,7 +2,7 @@ import xadmin
 
 from xadmin import views
 
-from .models import Order, DeliveryOrder
+from .models import Order, DeliveryOrder, Logistics, ReturnOrder
 
 
 class OrderAdmin(object):
@@ -10,19 +10,66 @@ class OrderAdmin(object):
     search_fields = ['user', 'status']  # 搜索时按以上字段搜索
     list_filter = ['status', 'add_time', 'total_price']  # 筛选器内容
     readonly_fields = ['id', 'user', 'status', 'total_price', 'add_time']
+    ordering = ['-add_time']  # 排序
 
 
 class DeliveryOrderAdmin(object):
-    list_display = ['id', 'order', 'status', 'commodity', 'tracking']  # 展示的内容
+    list_display = ['id', 'order', 'status', 'commodity']  # 展示的内容
     search_fields = ['status', 'commodity__name']  # 搜索时按以上字段搜索
-    list_filter = ['status', 'add_time','order__status']  # 筛选器内容
-    readonly_fields = ['id', 'order', 'commodity', 'address', 'nums', 'add_time']  # 只读
-    ordering = ['add_time']  # 排序
-    list_editable = ['status', 'tracking']  # 列表页编辑
+    list_filter = ['status', 'add_time', 'order__status']  # 筛选器内容
+    readonly_fields = ['id', 'order', 'commodity', 'address', 'nums', 'add_time', 'status']  # 只读
+    ordering = ['-add_time']  # 排序
+
+
+class LogisticsAdmin(object):
+    list_display = ['id', 'Company', 'reciever', 'track_nums', 'delivery']  # 展示的内容
+    search_fields = ['Company', 'reciever', 'id']  # 搜索时按以上字段搜索
+    list_filter = ['Company', 'add_time']  # 筛选器内容
+    readonly_fields = ['id']  # 只读
+    ordering = ['-add_time']  # 排序
+
+
+    def save_models(self):
+        obj = self.new_obj
+        obj.id = str(obj.delivery.id).replace('C', 'L')
+        f = obj.delivery.is_out()
+        if not obj.delivery.is_out():
+            obj.delivery.status = 'ed'
+            obj.delivery.save()
+            obj.save()
+
+
+class ReturnOrderAdmin(object):
+    list_display = ['id', 'type', 'status','delivery','desc']  # 展示的内容
+    search_fields = ['type', 'status', 'id']  # 搜索时按以上字段搜索
+    list_filter = ['status', 'add_time']  # 筛选器内容
+    readonly_fields = ['id','type','reason','tracking','delivery']  # 只读
+    ordering = ['-add_time']  # 排序
+    exclude = ['finish']
+    list_editable = ['status', 're_status']
+
+    def save_models(self):
+        obj = self.new_obj
+        if not obj.finish:
+            if obj.status == 'reject':
+                obj.finish = True
+            if obj.status == 'accept' and obj.type == 'mc' and obj.re_status == 'ed':
+                obj.delivery.order.user.wallet = obj.delivery.order.user.wallet + obj.delivery.get_totalprice()
+                obj.delivery.order.user.save()
+                obj.finish = True
+            if obj.status == 'accept' and obj.type == 'm':
+                obj.delivery.order.user.wallet = obj.delivery.order.user.wallet + obj.delivery.get_totalprice()
+                obj.delivery.order.user.save()
+                obj.finish = True
+        obj.save()
+
 
 
 xadmin.site.register(Order, OrderAdmin)
 xadmin.site.register(DeliveryOrder, DeliveryOrderAdmin)
+
+xadmin.site.register(Logistics, LogisticsAdmin)
+xadmin.site.register(ReturnOrder, ReturnOrderAdmin)
 
 
 class GlobalSettings(object):

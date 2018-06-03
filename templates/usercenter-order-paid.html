@@ -109,6 +109,7 @@
             </div>
             <div class="row">
                 {% for order in all_orders.object_list %}
+
                     <div class="col-md-12 card" style="margin-bottom: 10px;margin-top: 10px">
                     <table class="table ">
                         <thead>
@@ -145,13 +146,13 @@
                             </td>
                             <td>
                                 数量：{{ delivery.nums }}<br>
-                                快递单号：{% ifequal delivery.status 'ing' %}正在出货{% else %}{{ delivery.tracking }}{% endifequal %}
+                                快递单号：{% ifequal delivery.status 'ing' %}正在出货{% else %}{{ delivery.mytracking_nums }}{% endifequal %}
                             </td>
                             <td>
                                 价格：{{ delivery.get_totalprice }}
                             </td>
                             <td>
-                                <button class="btn  btn-outline-primary" name="return">退换</button>
+                                <button {% ifequal delivery.is_re 1 %}disabled="disabled" title="此单已退或处理中" {% endifequal %} class="btn  btn-outline-primary" name="return">退换</button>
                             </td>
 
                         </tr>
@@ -171,6 +172,8 @@
                         </tbody>
                     </table>
                 </div>
+
+
                 {% endfor %}
 
 
@@ -266,23 +269,24 @@
                     <span aria-hidden="true">×</span>
                 </button>
             </div>
-            <form>
+            <form method="post" action="{% url 'users:return' %}">
+                {% csrf_token %}
                 <div class="modal-body">
                     <div class="form-group">
 
                         <label for="id">出货单号
 
                         </label>
-                        <input type="text" disabled="disabled" class="form-control" id="id" maxlength="100">
+                        <input type="text" name="orderid" readonly="readonly" class="form-control" id="id" maxlength="100">
                     </div>
                     <div class="form-group">
 
                         <label for="hav_get">退货类型
 
                         </label>
-                        <select class="form-control" id="hav_get">
-                            <option value="1">仅退款</option>
-                            <option value="0">退货与款</option>
+                        <select class="form-control" id="hav_get" name="hav_get">
+                            <option value="m">仅退款</option>
+                            <option value="mc">退货与款</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -290,7 +294,7 @@
                         <label for="reason">退货原因
 
                         </label>
-                        <input type="text" class="form-control" id="reason" maxlength="100">
+                        <input name="reason" type="text" class="form-control" id="reason" maxlength="100">
                     </div>
 
                 </div>
@@ -324,7 +328,7 @@
 <script>
     $('.confirmrec').click(function () {
         var id =$(this).parent().parent().children('th').eq(0).text();
-        if (!confirm("您确定已经收到？"))
+        if (!confirm("您确定已经收到,全单退单请勿点？"))
         {
             return 1;
         }

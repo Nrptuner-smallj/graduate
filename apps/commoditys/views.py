@@ -1,5 +1,6 @@
 import time
 import random
+from itertools import chain
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -151,7 +152,12 @@ class PayView(View):
 
     def get(self, request):
         ids = request.GET.getlist('record_id')
-        address = request.GET.get('address')
+        address = request.GET.get('address','')
+        if not address:
+            records = ShopCartRecord.objects.filter(id__in=ids)
+            addresses = request.user.address_set.all()
+            return render(request, 'informationconfirm.html', dict(records=records, addresses=addresses,msg='地址不得为空'))
+
         new_ids = []
         for id in ids:
             new_ids.append(int(id))
@@ -182,6 +188,8 @@ class PayView(View):
                 break
         order.id = id
         order.save()
+        if not records:
+            order.delete()
         # 分别创建发货单
         for i, record in enumerate(records):
             delivery_order = DeliveryOrder()
@@ -191,7 +199,6 @@ class PayView(View):
             delivery_order.commodity = record.commodity
             delivery_order.nums = record.nums
             delivery_order.status = 'ing'
-            delivery_order.tracking = ''
             delivery_order.save()
 
         # 删去购物车的记录
@@ -231,19 +238,56 @@ class PayView(View):
         return HttpResponseRedirect(reverse('users:paidorder'))
 
 
-class AddCommentView(View):
+
+class CommentView(View):
     """商品评论"""
 
     def get(self, request,commodity_id):
         booklists=[]
+        my_comment = []
+        comments = []
         commodity = Commodity.objects.get(id=commodity_id)
         recommend = Commodity.objects.filter(catagory=commodity.catagory)[:5]
         could_buy = 0
+        could_comment = 0
         if commodity.stock == 0:
             could_buy = 1
         if request.user.is_authenticated:
             if request.user.paypass == '':
-                booklists = BookList.objects.filter(user=request.user)
                 could_buy = 1
-        comments = UserComment.objects.filter(commodity=commodity)
-        return render(request,"commditycomment.html",dict(commodity=commodity,recommend=recommend,could_buy=could_buy,comments=comments,booklists=booklists))
+            booklists = BookList.objects.filter(user=request.user)
+            all_comments = UserComment.objects.filter(~Q(user=request.user),commodity=commodity)
+            my_comment = UserComment.objects.filter(user=request.user,commodity=commodity)
+            if UserComment.objects.filter(user=request.user,commodity=commodity).count() < DeliveryOrder.objects.filter(commodity=commodity,order__user=request.user,order__status='finished').count():
+                could_comment = 1
+        else:
+            all_comments = UserComment.objects.all()
+        for comment in my_comment:
+            comments.append(comment)
+        for comment in all_comments:
+            comments.append(comment)
+        return render(request,"commditycomment.html",dict(commodity=commodity,recommend=recommend,could_buy=could_buy,comments=comments,booklists=booklists,could_comment=could_comment))
+
+
+class AddCommentView(View):
+    """添加评论"""
+
+    def post(self,request):
+        id = request.POST.get('id')
+        content = request.POST.get('content','默认评论好评')
+        rank = request.POST.get('rank',5)
+        comment = UserComment()
+        comment.user = request.user
+        comment.commodity = Commodity.objects.get(id=id)
+        comment.rank = rank
+        comment.content = content
+        if request.POST.get('is_anon',''):
+            comment.is_anon = True
+        comment.save()
+        from django.urls import reverse
+        return HttpResponseRedirect(reverse('commoditys:comment',args=(id,)))
+
+
+
+
+
