@@ -22,6 +22,9 @@ class UserProfile(AbstractUser):
     def __str__(self):
         return self.nickname
 
+    def messagenums(self):
+        return self.usermessage_set.filter(have_read=0).count()
+
 
 class EmailCode(models.Model):
     code = models.CharField(max_length=20, verbose_name="验证码")

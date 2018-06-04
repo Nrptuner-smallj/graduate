@@ -11,7 +11,7 @@ from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 
 from .forms import RegisterForm, LoginForm, ForgetPwdForm, ModifyForm, AddressForm
 from .models import UserProfile, EmailCode, Address
-from opreation.models import ShopCartRecord
+from opreation.models import ShopCartRecord,UserMessage
 from orders.models import Order, DeliveryOrder,ReturnOrder
 from utils.emailsend import send_email
 
@@ -288,6 +288,10 @@ class WalletView(View):
             user = request.user
             user.paypass = make_password(paypass)
             user.save()
+            user_message = UserMessage()
+            user_message.user = request.user
+            user_message.content = '您的支付密码已经成功修改'
+            user_message.save()
             return HttpResponse('{"status":"success"}', content_type='application/json')
 
 
@@ -450,4 +454,24 @@ class AddReturnView(View):
         returnorder.re_status = 'ing'
         returnorder.save()
         return HttpResponse('{"status":"success"}', content_type='application/json')
+
+
+class MessageView(View):
+    """用户信息"""
+
+    def get(self,request):
+        all_message = UserMessage.objects.filter(user=request.user).order_by('-send_time')
+        for message in all_message:
+            message.have_read = True
+            message.save()
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(all_message, 10, request=request)
+
+        all_message = p.page(page)
+
+        return render(request,'usercenter-message.html',dict(all_message=all_message))
 

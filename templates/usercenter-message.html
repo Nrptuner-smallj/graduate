@@ -10,19 +10,9 @@
 
     <meta name="description" content="Source code generated using layoutit.com">
     <meta name="author" content="LayoutIt!">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/city-picker.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 
     <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'bootstrap/css/style.css' %}" rel="stylesheet">
-    <style>
-        .bor {
-            border: 1px solid rgba(0, 0, 0, 0.15);
-            border-radius: 0.25rem;
-            height: 36px;
-            width: auto;
-        }
-    </style>
 
 </head>
 <body>
@@ -107,9 +97,9 @@
                 <a href="#" class="list-group-item ">购物车</a>
                 <a href="#" class="list-group-item ">我的订单</a>
                 <a href="#" class="list-group-item ">我的书单</a>
-                <a href="#" class="list-group-item list-group-item-action active">我的地址</a>
+                <a href="#" class="list-group-item ">我的地址</a>
                 <a href="#" class="list-group-item ">我的钱包</a>
-                <a href="#" class="list-group-item ">我的消息 <span class="badge badge-light badge-pill">4</span></a>
+                <a href="#" class="list-group-item list-group-item-action active ">我的消息 <span class="badge badge-light badge-pill">4</span></a>
             </div>
         </div>
         <div class="col-md-9">
@@ -119,119 +109,117 @@
                         <a href="#">个人中心</a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a href="#">我的地址</a>
-
+                        <a href="#">个人消息</a>
                     </li>
 
                 </ol>
             </nav>
-
             <div class="row">
 
                 <div class="col-md-12">
-                    <h5>
-                        添加/修改地址
-                    </h5>
+                    {% for message in all_message.object_list %}
+                        <div class="card" style="margin-bottom: 15px">
+                        <h6 class="card-header">
+                            {{ message.send_time }}
+                        </h6>
+                        <div class="card-body">
+                            <p class="card-text" style="margin-left: 20px;margin-bottom: 10px;margin-top: 10px;margin-right: 20px">
+                                {{ message.content }}
+                            </p>
+                        </div>
+
+                    </div>
+                    {% endfor %}
+
+
+                    <div class="text-center" style="text-align: right;vertical-align: center;display: table;height: 30px;
+    margin: 50px auto;">
+
+                        <nav>
+                            <ul class="pagination">
+                                {% if all_message.has_previous %}
+                                    <li class="page-item"><a class="page-link"
+                                                             href="?{{ all_message.previous_page_number.querystring }}">上一页</a>
+                                    </li>
+                                {% endif %}
+                                {% for page in all_message.pages %}
+
+                                    {% if page %}
+                                        {% ifequal page all_message.number %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{{ page.querystring }}"
+                                                   style="color: #c12e2a">{{ page }}</a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?{{ page.querystring }}">{{ page }}</a>
+                                            </li>
+                                        {% endifequal %}
+
+                                    {% endif %}
+
+                                {% endfor %}
+                                {% if all_message.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="?{{ all_message.next_page_number.querystring }}">下一页</a>
+                                    </li>
+                                {% endif %}
+
+
+                            </ul>
+                        </nav>
+
+                    </div>
 
                 </div>
-                <br>
-            </div>
-            <div class="row">
-                <div class="col-md-9">
-                    <form role="form" method="post" action="{% url 'users:addaddress' id %}">
-                        {% csrf_token %}
-                        <div class="form-group">
-
-                            <label>
-                                地址
-                            </label>
-                            <div id="detail" class=" " style="position: relative;">
-                                <input readonly type="text" data-toggle="city-picker" id="address" placeholder="点击从下拉面板中选择省/市/区县/镇" name="address"
-                                value="{{ address.province|default_if_none:'' }}/{{ address.city|default_if_none:'' }}/{{ address.region|default_if_none:'' }}/{{ address.town|default_if_none:'' }}">
-                            </div>
-                        </div>
-                        <div class="form-group">
-
-                            <label for="detail">
-                                详细地址
-                            </label>
-                            <input class="form-control" id="detail" name="detail" type="text" value="{{ address.detail|default_if_none:'' }}"/>
-                        </div>
-                        <div class="form-group">
-
-                            <label for="mobile">
-                                电话
-                            </label>
-                            <input class="form-control" id="tel" name="tel" value="{{ address.tel|default_if_none:'' }}" type="tel"/>
-                        </div>
-                        <div class="form-group">
-
-                            <label for="name">
-                                姓名
-                            </label>
-                            <input class="form-control" id="name" name="name" type="text" value="{{ address.name|default_if_none:'' }}" maxlength="30"/>
-                        </div>
-                        <div class="form-group"><span style="color: #cc3300;font-size: xx-small">
-                    {{ msg }}
-                </span></div>
-                        <button type="submit" class="btn btn-primary" id="save">
-                            保存地址
-                        </button>
-                    </form>
-                </div>
-                <div class="col-md-4">
-                </div>
-
-
             </div>
         </div>
     </div>
     <br>
-    <br>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card">
-                <h5 class="card-header">
-                    关于网站
-                </h5>
-                <div class="card-block">
-                    <p class="card-text">
-                        网站制作者：Smallj<br>
-                        网站名字：烟海书店电商网站<br>
-                        开始时间：2018.4.26
-                    </p>
-                </div>
-                <div class="card-footer">
-                    版权所有：Smallj
-                </div>
+<br>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">
+                关于网站
+            </h5>
+            <div class="card-block">
+                <p class="card-text">
+                    网站制作者：Smallj<br>
+                    网站名字：烟海书店电商网站<br>
+                    开始时间：2018.4.26
+                </p>
+            </div>
+            <div class="card-footer">
+                版权所有：Smallj
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <h5 class="card-header">
-                    网站技术声明
-                </h5>
-                <div class="card-block">
-                    <p class="card-text">
-                        网站技术使用：
-                        Django，<br>Bootstrap<br><br>
-                    </p>
-                </div>
-                <div class="card-footer">
-                    敬请关注
-                </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">
+                网站技术声明
+            </h5>
+            <div class="card-block">
+                <p class="card-text">
+                    网站技术使用：
+                    Django，<br>Bootstrap<br><br>
+                </p>
+            </div>
+            <div class="card-footer">
+                敬请关注
             </div>
         </div>
     </div>
 </div>
-
+</div>
 
 <script src="{% static 'bootstrap/js/jquery.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
 <script src="{% static 'bootstrap/js/scripts.js' %}"></script>
-
-<script src="{% static 'js/city-picker.data.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/city-picker.js' %}"></script>
+<script src="{% static 'js/bootstrap-datepicker.js' %}"></script>
 
 
 </body>
+</html>

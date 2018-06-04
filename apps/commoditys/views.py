@@ -10,12 +10,21 @@ from pure_pagination import PageNotAnInteger, Paginator, EmptyPage
 from django.contrib.auth.hashers import make_password, check_password
 
 from .models import Commodity
-from opreation.models import LackCommodity, ShopCartRecord,UserComment
+from opreation.models import LackCommodity, ShopCartRecord,UserComment,UserMessage
 from orders.models import Order, DeliveryOrder
 from booklist.models import BookList
 
 
 # Create your views here.
+
+
+class IndexView(View):
+    """主页功能"""
+    def get(self,request):
+        new_commoditys = Commodity.objects.all().order_by('-add_time')[:8]
+        hot_commoditys = Commodity.objects.all().order_by('-click_nums')[:8]
+        return render(request,'index.html',dict(hot_commoditys=hot_commoditys,new_commoditys=new_commoditys))
+
 
 class SearchView(View):
 
@@ -234,6 +243,10 @@ class PayView(View):
         user.save()
         order.status = 'paid'
         order.save()
+        user_message = UserMessage()
+        user_message.user = request.user
+        user_message.content = '您的账户支出'+str(order.total_price)+'元'
+        user_message.save()
         from django.urls import reverse
         return HttpResponseRedirect(reverse('users:paidorder'))
 

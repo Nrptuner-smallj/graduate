@@ -20,11 +20,12 @@ from django.views.static import serve
 
 from .settings import MEDIA_ROOT
 import xadmin
+from commoditys.views import IndexView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('xadmin/', xadmin.site.urls),
-    path('index/', TemplateView.as_view(template_name="index.html"), name='index'),
+    path('index/', IndexView.as_view(), name='index'),
     path('users/', include('users.urls', namespace='users')),
     path('commoditys/', include('commoditys.urls', namespace='commoditys')),
     path('booklist/',include('booklist.urls',namespace='booklist')),

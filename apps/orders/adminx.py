@@ -3,6 +3,7 @@ import xadmin
 from xadmin import views
 
 from .models import Order, DeliveryOrder, Logistics, ReturnOrder
+from opreation.models import UserMessage
 
 
 class OrderAdmin(object):
@@ -37,6 +38,10 @@ class LogisticsAdmin(object):
             obj.delivery.status = 'ed'
             obj.delivery.save()
             obj.save()
+            user_message = UserMessage()
+            user_message.user = obj.delivery.order.user
+            user_message.content = '您的货物' + str(obj.delivery.id)+','+str(obj.delivery.commodity.name) + '已出货'
+            user_message.save()
 
 
 class ReturnOrderAdmin(object):

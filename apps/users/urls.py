@@ -3,7 +3,7 @@ from django.urls import path
 from .views import RegisterView, GetEmailCodeView, LoginView, LogoutView, ForgetPwdView, UserCenterIndexView,ModifyPwdView
 from .views import ModifyEmailView,AddressListView,AddAddressView,DeleteAddressView,WalletView,CartView,ChangeCartView
 from .views import DeteleCartView,UnpaidOrderView,DeleteUnpaidOrderView,Pay1View,PaidOrderView,ConfirmRecView,FinshedOrderView
-from .views import ReturnView,ReturnOrderView,AddReturnView
+from .views import ReturnView,ReturnOrderView,AddReturnView,MessageView
 
 
 app_name = 'users'
@@ -32,4 +32,5 @@ urlpatterns = [
     path('return/',ReturnView.as_view(),name='return'),
     path('returnorder/',ReturnOrderView.as_view(),name='returnorder'),
     path('addreturn/',AddReturnView.as_view(),name='addreturn'),
+    path('message/',MessageView.as_view(),name='message'),
 ]
